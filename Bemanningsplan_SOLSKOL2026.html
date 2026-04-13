@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLSKOL 2026 – Bemanningsplan</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  body { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const PLAN_DATA = [
+  {
+    "time": "08:00–08:20",
+    "label": "Förberedelser + Registrering Scandic",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Ställa ut bord i entrén Turebergshuset",
+        "who": "Martin Wallén, Moa Österberg, Lasse Sundberg, Barbara Lundgren, Kaisa Humlebo",
+        "time": "08:00–08:20",
+        "note": "~20 min. Borden kommer kl 08:00, De svarta runda fikaborden kan placeras i mitten. Blir det trångt ställ in dem i Sollentunasalen. Karta till var borden ska stå finns under fliken möblering utställare. "
+      },
+      {
+        "task": "Ställa fram stolar Satelliten",
+        "who": "Ella Marjakangas, Johan Hesselgren, Elin Larsson",
+        "time": "08:00–09:00",
+        "note": "Stora scenen 120 st, Spegelsalen 50 st. Klart senast 09:30"
+      },
+      {
+        "task": "Registreringsdisk Scandic (7 pers)",
+        "who": "Isabell Weber, Katarina Edwinsson, Maria Högberg, Katja Lagerbäck, Åsa Börjesson, Maria Nygårds, Anna Lena Ekstrand",
+        "note": "Alla börjar 08:00"
+      },
+      {
+        "task": "Plan 5 – släppa in utställare 08:30–09:15",
+        "who": "Johan Lundgren, Maria Svedman",
+        "note": "Utställare behöver komma in"
+      },
+      {
+        "task": "VIP-rum Satelliten – iordningställ fika mm",
+        "who": "Annette Karmitsa, Jonas",
+        "time": "08:00",
+        "note": "Fika i VIP klart 09:15"
+      },
+      {
+        "task": "Sätta upp siffror i Satelliten",
+        "who": "Annette Karmitsa, Karin Hiller",
+        "time": "08:00",
+        "note": "Till reflektionsgrupper"
+      }
+    ]
+  },
+  {
+    "time": "08:20–09:15",
+    "label": "Invigning + Startföreläsning (Scandic)",
+    "type": "main",
+    "tasks": [
+      {
+        "task": "Registrering Scandic fortsätter",
+        "who": "Reg-teamet (7 pers)"
+      },
+      {
+        "task": "Invigning 08:20 (Soley)",
+        "who": "",
+        "note": "Intern"
+      },
+      {
+        "task": "Startföreläsning 08:30–09:15: Lars Strannegård",
+        "who": "",
+        "note": "EXTERN"
+      }
+    ]
+  },
+  {
+    "time": "Hela dagen",
+    "label": "🎫 RECEPTION & REGISTRERING – Översikt",
+    "type": "reception",
+    "tasks": [
+      {
+        "task": "08:00–09:15 Registrering SCANDIC (7 pers)",
+        "who": "Isabell Weber, Katarina Edwinsson, Maria Högberg, Katja Lagerbäck, Åsa Börjesson, Maria Nygårds, Anna Lena Ekstrand",
+        "note": "Alla börjar 08:00. Frigörs efter 09:15"
+      },
+      {
+        "task": "09:00– Reception TUREBERGSHUSET (1 pers)",
+        "who": "Ella Marjakangas",
+        "note": "Ensam 09:00–09:30"
+      },
+      {
+        "task": "09:30– Reception TUREBERGSHUSET (3 pers)",
+        "who": "Ella Marjakangas, Isabell Weber, Katarina Edwinsson",
+        "note": "Isabell och Katarina tar med sig de besökarbadges som är kvar från Satelliten. "
+      },
+      {
+        "task": "12:00– Reception TUREBERGSHUSET efter lunch (2 pers)",
+        "who": "Jennie Flodin, Soudabeh Bagheri",
+        "note": "Registrering EM. Jennie borta 14:00–14:30"
+      },
+      {
+        "task": "09:00– Reception SATELLITEN",
+        "who": "Elin Larsson, Johan Hesselgren",
+        "note": "Hela dagen"
+      }
+    ]
+  },
+  {
+    "time": "Hela dagen",
+    "label": "🔑 NYCKELPIGOR – Dörröppning Plan 3 & 4",
+    "type": "keys",
+    "tasks": [
+      {
+        "task": "Plan 4 – hela dagen",
+        "who": "Katarina Österberg (till 15:45), Carina Baas (till 16:00)",
+        "note": "Stationerade på plan 4, öppnar alla dörrar"
+      },
+      {
+        "task": "Plan 3 FM (09:30–12:00)",
+        "who": "Behövs inte någon detta pass",
+        "note": "Ledig efter registrering, lätt schema. Öppnar plan 3 inför varje pass"
+      },
+      {
+        "task": "Plan 3 EM (12:30–15:00)",
+        "who": "Anna Schiller",
+        "note": "Redan stationerad plan 3. Öppnar+möter föreläsare Viby"
+      },
+      {
+        "task": "Backup nyckel",
+        "who": "Maria Svedman (FM), Katarina Edwinsson (FM) Åsa Börjesson ",
+        "note": "Kan rycka in vid behov – lätta scheman efter reg"
+      }
+    ]
+  },
+  {
+    "time": "09:00",
+    "label": "Turebergshuset + Satelliten börjar bemannas",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Reception/entrévärd Turebergshuset (1 pers, fler 09:30)",
+        "who": "Ella Marjakangas",
+        "time": "09:00",
+        "note": "Ensam till 09:30, då fler ansluter"
+      },
+      {
+        "task": "Teknik på plats överallt",
+        "who": "Göran (plan 3-5) , IT-support (Sollentunasalaen), Jonas (Satelliten)",
+        "time": "09:00"
+      },
+      {
+        "task": "Fikagrupp redo",
+        "who": "David, Kathi, Agneta Bodin, Sandra Bagge",
+        "time": "09:00",
+        "note": "Fika ska vara redo från Internservice så det är bara att hålla koll på att inget är slut och fixa lite. "
+      },
+      {
+        "task": "Satelliten reception öppnar",
+        "who": "Elin Larsson, Johan Hesselgren",
+        "time": "09:00",
+        "note": "Stina SZ ansluter 10:30 backup"
+      }
+    ]
+  },
+  {
+    "time": "09:15–09:45",
+    "label": "Förflyttning från Scandic + Fika",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "🌸 Blommor till Lars Strannegård (extern, enda pass)",
+        "who": "Lisa Eriksson eller Soley",
+        "time": "09:15",
+        "flower": true
+      },
+      {
+        "task": "Fika serveras utanför varje föreläsningsrum",
+        "who": "Internservice",
+        "note": "Fikagrupp: David, Kathi, Agneta, Sandra kan hålla koll så att allt flyter på."
+      },
+      {
+        "task": "Reception Turebergshuset – fler ansluter 09:30",
+        "who": "Ella Marjakangas, Isabell Weber, Katarina Edwinsson",
+        "time": "09:30",
+        "note": "Folk börjar anlända"
+      }
+    ]
+  },
+  {
+    "time": "09:30",
+    "label": "Möta föreläsare inför Pass 1 (09:45–10:30)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": " Plan 4: Katarina Ö, Carina Baas",
+        "time": "09:30",
+        "note": "Öppna senast 09:35"
+      },
+      {
+        "task": "Sollentunasalen: Patricia Diaz (EXTERN)",
+        "who": "Barbara Lundgren möter utanför Sollentunasalen",
+        "note": "Föreläser igen pass 3 → blommor efter pass 3. Barbara inleder (1 min)"
+      },
+      {
+        "task": "Satelliten: Anne Marie Körling (EXTERN)",
+        "who": "Katja Lagerbäck möter utanför Satelliten",
+        "note": "Föreläser igen pass 2 → blommor efter pass 2. Katja Lagerbäck inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Camilla Askebäck Diaz (EXTERN)",
+        "who": "Jonas Westholm möter utanför Spegelsalen",
+        "note": "Föreläser igen pass 2 → blommor efter pass 2. Lisa inleder"
+      },
+      {
+        "task": "Järvafältet: Nettan Pira (intern)",
+        "who": "Frida Signevik möter utanför Järvafältet"
+      },
+      {
+        "task": "Bagarby P4: Anna Lundholm Ehn m.fl. (intern)",
+        "who": "Katarina Ö (befintlig plan 4)"
+      },
+      {
+        "task": "Rotebro P4: Cia Silverberg (intern)",
+        "who": "Carina Baas (befintlig plan 4)"
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson (extern, EJ blommor)",
+        "who": "Erik Jaråker låser upp dörren",
+        "note": "Föreläser igen pass 2. Inga blommor."
+      }
+    ]
+  },
+  {
+    "time": "10:30",
+    "label": "Pass 1 slut – Brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🏆 Brickor interna P4 (Bagarby, Rotebro)",
+        "who": "Katarina Ö",
+        "flower": true
+      },
+      {
+        "task": "🏆 Bricka Nettan Pira (Järvafältet)",
+        "who": "Frida Signevik",
+        "flower": true
+      },
+      {
+        "task": "🏆 Bricka Cia Silverberg (Rotebro P4)",
+        "who": "Carina Baas",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "10:30–10:45",
+    "label": "Förflyttning",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Alla på poster, redo för pass 2",
+        "who": ""
+      }
+    ]
+  },
+  {
+    "time": "10:30",
+    "label": "Möta föreläsare inför Pass 2 (10:45–11:30)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 4: Katarina Ö + Carina Baas",
+        "time": "10:30",
+        "note": "Öppna senast 10:35"
+      },
+      {
+        "task": "Sollentunasalen: Camilla Askebäck Diaz (EXTERN, sista pass)",
+        "who": "Ann Eriksson Johansson möter utanför Sollentunasalen",
+        "note": "Ann Eriksson Johansson inleder (1 min)"
+      },
+      {
+        "task": "Satelliten: Susanne Kjällander (EXTERN, enda pass)",
+        "who": "Ingmari Brockland möter utanför Satelliten (börjar 10:30)",
+        "note": "Ingmari Brockland inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Helen Larsson (EXTERN)",
+        "who": "Lisa Eriksson möter utanför Spegelsalen",
+        "note": "Föreläser igen pass 3 → blommor efter pass 3"
+      },
+      {
+        "task": "Järvafältet: Anne Marie Körling (EXTERN, sista pass)",
+        "who": "Frida Signevik möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Isabelle Lönberg (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Bagarby P4: Vahida Sabani (intern)",
+        "who": "Katja Lagerbäck"
+      },
+      {
+        "task": "Rotebro P4: Susanne Lindberg m.fl. (intern)",
+        "who": "INSTÄLLD",
+        "note": ""
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson (extern, EJ blommor, sista pass)",
+        "who": "Ingen behöver möta upp"
+      }
+    ]
+  },
+  {
+    "time": "11:30",
+    "label": "Pass 2 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Anne Marie Körling (sista pass) – Järvafältet",
+        "who": "Frida Signevik",
+        "flower": true
+      },
+      {
+        "task": "🌸 Camilla Askebäck Diaz (sista pass) – Sollentunasalen",
+        "who": "Ann Eriksson Johansson",
+        "flower": true
+      },
+      {
+        "task": "🌸 Susanne Kjällander (enda pass) – Satelliten",
+        "who": "Ingmari Brockland",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor interna P4 (Tureberg, Bagarby, Rotebro)",
+        "who": "Katja Lagerbäck,  Frida Signevik, Katarina Ö",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "11:30–12:00",
+    "label": "Förflyttning + Reflektion",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning 11:30–11:40",
+        "who": ""
+      },
+      {
+        "task": "Reflektion 11:40–12:00",
+        "who": "",
+        "note": "Siffror til grupper - Karin + Annette (dagen innan)"
+      },
+      {
+        "task": "Reflektionshjälp Plan 4",
+        "who": "Katarina Ö / Carina Baas"
+      },
+      {
+        "task": "Reflektionshjälp Plan 5",
+        "who": "Johan Lundgren. Åsa Börjesson"
+      },
+      {
+        "task": "Reflektionshjälp Satelliten",
+        "who": "Elin Larsson, Johan Hesselgren"
+      },
+      {
+        "task": "Reflektionshjälp Sollentunasalen",
+        "who": "Lasse Sundberg, Anna Lena Ekstrand"
+      }
+    ]
+  },
+  {
+    "time": "12:00–13:00",
+    "label": "LUNCH – Skiftbyte",
+    "type": "lunch",
+    "tasks": [
+      {
+        "task": "FM-personal slutar",
+        "who": "Isabell, Kat E, Maria Svedman, Katja, Åsa, Frida S, Barbara, Lasse, Moa, Martin, Maria Högberg"
+      },
+      {
+        "task": "Fikagrupp EM",
+        "who": "David, Kathi, Ylva + Agneta, Sandra (till 14:00)",
+        "note": "Ylva tar över med David+Kathi efter 14:00"
+      },
+      {
+        "task": "Reception Turebergshuset (2 pers)",
+        "who": "Jennie Flodin, Soudabeh Bagheri",
+        "note": "Registrering EM"
+      },
+      {
+        "task": "🔊 Binogi pris – högtalare+mikrofon",
+        "who": "Erik Jaråker hämtar från Makerzone",
+        "note": "Under lunchen, ska vara på plats klockan 13.00"
+      }
+    ]
+  },
+  {
+    "time": "12:45",
+    "label": "Möta föreläsare inför Pass 3 (13:00–13:45)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 3: Anna Schiller | Plan 4: Katarina Ö + Carina Baas",
+        "time": "12:45",
+        "note": "Öppna senast 12:50"
+      },
+      {
+        "task": "Satelliten: Patricia Diaz (EXTERN, sista pass)",
+        "who": "Ann Eriksson Johansson möter utanför Satelliten",
+        "note": "Ann inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Helen Larsson (EXTERN, sista pass)",
+        "who": "Lisa Eriksson möter utanför Spegelsalen",
+        "note": "Lisa inleder"
+      },
+      {
+        "task": "Järvafältet: Chiemi Lundqvist m.fl. (intern)",
+        "who": "Anita Oliver möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Maria Högberg (HÅLLER PASS)",
+        "who": "Ella Marjakangas",
+        "note": ""
+      },
+      {
+        "task": "Bagarby P4: Karin Nacke m.fl. (intern)",
+        "who": "Annette Karmitsa"
+      },
+      {
+        "task": "Rotebro P4: Naturskolan (intern)",
+        "who": "Maria Nyström"
+      },
+      {
+        "task": "Slottsparken P4: Karin Edlund (intern)",
+        "who": "Carina Baas"
+      },
+      {
+        "task": "Helenelund P4: Nathalie Ilonen (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Häggvik P4: Caroline Lindfors (intern)",
+        "who": "Frida ER"
+      },
+      {
+        "task": "Vaxmora P4: Banaz Berdman (intern)",
+        "who": "Anna Lena Ekstrand"
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson ",
+        "who": "Ingen behövs"
+      },
+      {
+        "task": "Viby P3: Richard Duncan (leverantör)",
+        "who": "Anna Schiller"
+      }
+    ]
+  },
+  {
+    "time": "13:45",
+    "label": "Pass 3 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Patricia Diaz – Satelliten",
+        "who": "Ann Eriksson Johansson",
+        "flower": true
+      },
+      {
+        "task": "🌸 Helen Larsson – Spegelsalen",
+        "who": "Lisa Eriksson",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor alla interna pass 3",
+        "who": "Maria Nyström, Annette, Anita, Anna Lena Ekstrand, Anna Schiller, Frida ER, Katarina Ö, Carina Baas, Ella Marjakangas, Karin Hiller ger bricka till de i Spegelsalen i Satelliten",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "13:45–14:00",
+    "label": "Förflyttning",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning",
+        "who": ""
+      }
+    ]
+  },
+  {
+    "time": "13:45",
+    "label": "Möta föreläsare inför Pass 4 (14:00–14:45)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 3: Anna Schiller | Plan 4: Katarina Ö + Carina Baas",
+        "time": "13:45",
+        "note": "Öppna senast 13:50"
+      },
+      {
+        "task": "Satelliten: Martin Sörensson (EXTERN, enda pass)",
+        "who": "Jonas Westholm möter utanför Satelliten",
+        "note": "Jonas Westholm inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Gärdesskolan (intern)",
+        "who": "Karin Hiller",
+        "note": "Karin inleder 1 minut"
+      },
+      {
+        "task": "Järvafältet: Margareta Liljeqvist (intern)",
+        "who": "Anita Oliver möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Fabienne Mahram Nia (intern)",
+        "who": "Annette Karmitsa"
+      },
+      {
+        "task": "Bagarby P4: Christina Israelsson m.fl. (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Rotebro P4: Sofie Petersson (intern)",
+        "who": "Carina Baas"
+      },
+      {
+        "task": "Slottsparken P4: Maria Glad (HÅLLER PASS)",
+        "who": "Stina SZ"
+      },
+      {
+        "task": "Helenelund P4: Kaisa Humlebo (HÅLLER PASS)",
+        "who": "Kanske klarar sig"
+      },
+      {
+        "task": "Häggvik P4: Tobias Engborg (intern)",
+        "who": "Frida ER"
+      },
+      {
+        "task": "Vaxmora P4: Emanuela Falcao F (intern)",
+        "who": "Anna Lena Ekstrand"
+      },
+      {
+        "task": "Makerzone: Jannike Tillå (extern, EJ blommor)",
+        "who": ""
+      },
+      {
+        "task": "Europa P4: Araceli m.fl. (intern)",
+        "who": "Johan Lundgren"
+      },
+      {
+        "task": "Viby P3: Richard Duncan (leverantör)",
+        "who": "Anna Schiller"
+      },
+      {
+        "task": "Plan 5: dörröppnare",
+        "who": "Maria Nygårds"
+      }
+    ]
+  },
+  {
+    "time": "14:00",
+    "label": "Under Pass 4 – praktiska uppgifter",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "🔨 Plocka bort utställarbord ~20 min",
+        "who": "Erik Jaråker, Johan Lundgren, David, Kathi",
+        "time": "14:00",
+        "note": "4 pers + internservice"
+      }
+    ]
+  },
+  {
+    "time": "14:45",
+    "label": "Pass 4 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Martin Sörensson – Satelliten",
+        "who": "Jonas Westholm",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor alla interna pass 4",
+        "who": "Annette, Anna Lena Ekstrand, Maria Nygårds, Stina SZ, Frida ER, Johan Lundgren, Anna Schiller, Carina Baas",
+        "note": "ALE ger till Kaisa med",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "14:45–15:30",
+    "label": "Förflyttning + Reflektion",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning 14:45–15:00",
+        "who": ""
+      },
+      {
+        "task": "Reflektion 15:00–15:30",
+        "who": ""
+      },
+      {
+        "task": "Reflektionshjälp Plan 4",
+        "who": "Katarina Ö / Carina"
+      },
+      {
+        "task": "Reflektionshjälp Plan 5",
+        "who": "Maria Nygårds, Frida ER"
+      },
+      {
+        "task": "Reflektionshjälp Satelliten",
+        "who": "Elin Larsson, Johan Hesselgren"
+      },
+      {
+        "task": "Reflektionshjälp Plan 3",
+        "who": "Anna Lena Ekstrand"
+      }
+    ]
+  },
+  {
+    "time": "15:30–16:45",
+    "label": "Förflyttning + Avslutning Scandic",
+    "type": "main",
+    "tasks": [
+      {
+        "task": "Ställa tillbaka stolar Spegelsalen + städa ur VIP-rum",
+        "who": "Kaisa Humlebo, Frida ER, Soudabeh Bagheri",
+        "time": "15:00–16:00",
+        "note": "Spegelsalen stolar tillbaka + VIP-rum töms och städas"
+      },
+      {
+        "task": "Scandic 16:00–16:45: Kristina Bähr (EXTERN)",
+        "who": "Lisa Eriksson"
+      },
+      {
+        "task": "🌸 Blommor Kristina Bähr",
+        "who": "Lisa Eriksson",
+        "time": "16:45",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "16:45",
+    "label": "Efter Scandic – städning och transport",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Ta bort vepor, ballonger och material – transportera till Satelliten",
+        "who": "Maria Högberg, Erik Jaråker",
+        "time": "16:45",
+        "note": "Efter sista föreläsningen på Scandic"
+      }
+    ]
+  }
+];
+
+const SUPPLIERS = [{"name": "Binogi", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Trelson", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Hands on Science", "bord": "1 bord, 1 stol", "ovrigt": "El"}, {"name": "Skolon", "bord": "Inga bord/stolar – har egen monter", "ovrigt": "El"}, {"name": "ILT", "bord": "2 bord + 1 runt högt bord", "ovrigt": "El"}, {"name": "Everway", "bord": "1 bord, 1 stol + självgående bord vid aktiviteter", "ovrigt": "El"}, {"name": "NE", "bord": "1 lägre stort bord + 1 mindre högt bord", "ovrigt": "El"}, {"name": "Jamf", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Infomentor", "bord": "Inga bord/stolar – har egen monter", "ovrigt": "El"}, {"name": "Internetstiftelsen", "bord": "Självgående bord", "ovrigt": "El?"}, {"name": "Magma", "bord": "1–2 ståbord", "ovrigt": "El"}, {"name": "ATEA", "bord": "–", "ovrigt": "–"}];
+
+const INSTRUCTIONS = {
+  meetSpeaker: [
+    "Var på plats SENAST 15 min före passets start utanför rätt sal.",
+    "Välkomna föreläsaren, presentera dig, fråga om hen behöver något.",
+    "Visa toaletter och säg att det finns vatten i rummet.",
+    'Informera om tiden: "Du har 45 min, viktigt att inte dra över tiden."',
+    "PÅMINN om PA/mikrofon i: Scandic, Sollentunasalen, Satelliten, Järvafältet.",
+    "Informera om att någon kommer att komma EFTER passet för att tacka.",
+  ],
+  twoPassSpeakers: [
+    { name: "Patricia Diaz", passes: "Pass 1 (Sollentunasalen) + Pass 3 (Satelliten)", flowers: "efter pass 3" },
+    { name: "Anne Marie Körling", passes: "Pass 1 (Satelliten) + Pass 2 (Järvafältet)", flowers: "efter pass 2" },
+    { name: "Camilla Askebäck Diaz", passes: "Pass 1 (Spegelsalen) + Pass 2 (Sollentunasalen)", flowers: "efter pass 2" },
+    { name: "Helen Larsson", passes: "Pass 2 (Spegelsalen) + Pass 3 (Spegelsalen)", flowers: "efter pass 3" },
+    { name: "Kristina Alexandersson", passes: "Pass 1–2 (Makerzone)", flowers: "EJ blommor" },
+    { name: "Richard Duncan", passes: "Pass 3–4 (Viby P3)", flowers: "bricka (leverantör)" },
+  ],
+  floatingStaff: ["Lisa Eriksson", "Anna Lena Ekstrand", "Ann Eriksson Johansson", "Ingmari Brockland"],
+  fikaStaff: ["David", "Kathi", "Agneta Bodin (till 14:00)", "Sandra Bagge (till 14:00)", "Ylva Färstedt (EM)"],
+};
+
+const TYPE_STYLE = {
+  prep:      { border: "border-amber-300",  bg: "bg-amber-50",  badge: "bg-amber-200 text-amber-900" },
+  main:      { border: "border-sky-200",    bg: "bg-sky-50",    badge: "bg-sky-200 text-sky-900" },
+  reception: { border: "border-rose-300",   bg: "bg-rose-50",   badge: "bg-rose-200 text-rose-900" },
+  keys:      { border: "border-cyan-300",   bg: "bg-cyan-50",   badge: "bg-cyan-200 text-cyan-900" },
+  break:     { border: "border-stone-200",  bg: "bg-stone-50",  badge: "bg-stone-200 text-stone-700" },
+  session:   { border: "border-emerald-200",bg: "bg-emerald-50",badge: "bg-emerald-200 text-emerald-900" },
+  flower:    { border: "border-purple-200", bg: "bg-purple-50", badge: "bg-purple-200 text-purple-900" },
+  lunch:     { border: "border-orange-200", bg: "bg-orange-50", badge: "bg-orange-200 text-orange-900" },
+};
+
+function TaskRow({ task }) {
+  const rowBg = task.flower ? "bg-purple-100/70 border-purple-200" : "bg-white/80 border-slate-100";
+  return (
+    <div className={`rounded p-2 text-xs ${rowBg} border`}>
+      <div className="font-semibold text-slate-800 mb-0.5">{task.task}</div>
+      {task.who && <div className="text-blue-700">{task.who}</div>}
+      <div className="flex gap-3 mt-0.5 flex-wrap">
+        {task.time && <span className="text-slate-500">{task.time}</span>}
+        {task.note && <span className="text-slate-400 italic">{task.note}</span>}
+      </div>
+    </div>
+  );
+}
+
+function TimeBlock({ block, searchQuery }) {
+  const style = TYPE_STYLE[block.type] || TYPE_STYLE.break;
+  const q = searchQuery ? searchQuery.toLowerCase() : "";
+  const visibleTasks = !q ? block.tasks : block.tasks.filter(t =>
+    [t.task, t.who || "", t.note || ""].some(s => s.toLowerCase().includes(q))
+  );
+  const blockMatches = q && [block.label, block.time].some(s => s.toLowerCase().includes(q));
+  const tasksToShow = blockMatches ? block.tasks : visibleTasks;
+  if (q && tasksToShow.length === 0) return null;
+  return (
+    <div className={`rounded-lg border ${style.border} ${style.bg} overflow-hidden`}>
+      <div className="px-3 py-2 flex items-center gap-2 flex-wrap">
+        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${style.badge}`}>{block.time}</span>
+        <span className="text-sm font-semibold text-slate-700">{block.label}</span>
+      </div>
+      <div className="px-3 pb-2 space-y-1">
+        {tasksToShow.map((task, i) => <TaskRow key={i} task={task} />)}
+      </div>
+    </div>
+  );
+}
+
+function TabTimeline({ searchQuery, setSearchQuery }) {
+  return (
+    <div className="space-y-2">
+      <input
+        placeholder="🔍 Sök person, sal eller uppgift..."
+        className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+        type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+      />
+      {PLAN_DATA.map((block, i) => <TimeBlock key={i} block={block} searchQuery={searchQuery} />)}
+    </div>
+  );
+}
+
+function TabInstructions() {
+  return (
+    <div className="space-y-4">
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50 overflow-hidden">
+        <div className="px-3 py-2 bg-emerald-600 text-white"><h2 className="font-bold text-sm">📋 Instruktioner – Möta föreläsare</h2></div>
+        <ol className="px-4 py-3 space-y-2">
+          {INSTRUCTIONS.meetSpeaker.map((line, i) => (
+            <li key={i} className="flex gap-2 text-sm text-slate-700">
+              <span className="font-bold text-emerald-700 shrink-0">{i+1}.</span><span>{line}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="rounded-lg border border-blue-200 bg-blue-50 overflow-hidden">
+        <div className="px-3 py-2 bg-blue-600 text-white"><h2 className="font-bold text-sm">🔄 Föreläsare med två pass – blommor efter SISTA passet</h2></div>
+        <div className="px-3 py-2 space-y-1.5">
+          {INSTRUCTIONS.twoPassSpeakers.map((s, i) => (
+            <div key={i} className="rounded p-2 bg-white/80 border border-slate-100 text-xs">
+              <div className="font-semibold text-slate-800">{s.name}</div>
+              <div className="text-slate-600">{s.passes}</div>
+              <div className="text-purple-700 font-medium">Blommor/bricka: {s.flowers}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-lg border border-amber-200 bg-amber-50 overflow-hidden">
+        <div className="px-3 py-2 bg-amber-500 text-white"><h2 className="font-bold text-sm">⚡ Flytande personal</h2></div>
+        <div className="px-3 py-3 flex flex-wrap gap-2">
+          {INSTRUCTIONS.floatingStaff.map((name, i) => (
+            <span key={i} className="px-2 py-1 bg-amber-200 text-amber-900 rounded text-xs font-medium">{name}</span>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-lg border border-orange-200 bg-orange-50 overflow-hidden">
+        <div className="px-3 py-2 bg-orange-500 text-white"><h2 className="font-bold text-sm">☕ Fikagruppen</h2></div>
+        <div className="px-3 py-3 flex flex-wrap gap-2">
+          {INSTRUCTIONS.fikaStaff.map((name, i) => (
+            <span key={i} className="px-2 py-1 bg-orange-200 text-orange-900 rounded text-xs font-medium">{name}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TabPersonal() {
+  const groups = {
+    "08:00 – slutar efter lunch": ["Isabell Weber","Katarina Edwinsson","Maria Högberg (till 11:30, tillbaka pass 13:00)","Katja Lagerbäck","Åsa Börjesson","Maria Svedman","Frida Signevik","Barbara Lundgren","Lasse Sundberg","Moa Österberg","Martin Wallén"],
+    "Hela dagen – FM och EM": ["Ella Marjakangas","Johan Lundgren","Katarina Österberg (slutar 15:45)","Carina Baas (slutar 16:00)","Elin Larsson","Johan Hesselgren","Annette Karmitsa","Karin Hiller","Maria Nyström","Maria Nygårds","Erik Jaråker","Jonas","Jennie Flodin (borta 14:00–14:30)"],
+    "FM – begränsad tid": ["Kaisa Humlebo (ej 08:20–12:00, håller pass 14:00–15:00)","Stina SZ (ej 08:00–10:30, ej 15:50–16:45)"],
+    "EM – börjar efter lunch": ["Frida ER","Anita Oliver","Anna Schiller","Soudabeh Bagheri","Ylva Färstedt"],
+    "Fikagrupp": ["David","Kathi","Agneta Bodin (till 14:00)","Sandra Bagge (till 14:00)","Ylva Färstedt (EM)"],
+    "Flytande / korta uppdrag": ["Lisa Eriksson","Anna Lena Ekstrand","Ann Eriksson Johansson","Ingmari Brockland"],
+    "Teknik": ["Göran (plan 3–5)","IT-support (Sollentunasalen)","Jonas (Satelliten)"],
+  };
+  return (
+    <div className="space-y-3">
+      {Object.entries(groups).map(([group, names]) => (
+        <div key={group} className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+          <div className="px-3 py-2 bg-slate-700 text-white"><h2 className="font-semibold text-xs">{group}</h2></div>
+          <div className="px-3 py-2 flex flex-wrap gap-1.5">
+            {names.map((name, i) => <span key={i} className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs">{name}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TabMoblering() {
+  return (
+    <div className="space-y-4">
+      <div className="rounded-lg border border-slate-200 bg-white p-3">
+        <h2 className="font-bold text-slate-700 text-sm mb-3">Skiss utställningssyta utanför Sollentunasalen</h2>
+        <div className="overflow-x-auto">
+          <svg viewBox="0 0 1560 490" style={{minWidth:"900px",width:"100%",fontFamily:"sans-serif"}}>
+            <rect x="90" y="0" width="860" height="22" fill="#e8c000"/>
+            <text x="520" y="15" textAnchor="middle" fontSize="12" fontWeight="bold">24m</text>
+            <rect x="988" y="0" width="484" height="22" fill="#e8c000"/>
+            <text x="1230" y="15" textAnchor="middle" fontSize="12" fontWeight="bold">6m</text>
+            <rect x="0" y="22" width="88" height="444" fill="#90c8e0"/>
+            <text transform="translate(44,264) rotate(-90)" textAnchor="middle" fontSize="13" fontWeight="bold">3m</text>
+            <rect x="1516" y="246" width="44" height="220" fill="#e8c000"/>
+            <text transform="translate(1538,356) rotate(-90)" textAnchor="middle" fontSize="13" fontWeight="bold">3m</text>
+            <rect x="88" y="22" width="1428" height="408" fill="#e4e4e4" stroke="#aaa" strokeWidth="1"/>
+            {Array.from({length:44}).map((_,i) => <line key={"c"+i} x1={88+i*32} y1={22} x2={88+i*32} y2={430} stroke="#ccc" strokeWidth="0.5"/>)}
+            {Array.from({length:13}).map((_,i) => <line key={"r"+i} x1={88} y1={22+i*31} x2={1516} y2={22+i*31} stroke="#ccc" strokeWidth="0.5"/>)}
+            <rect x="1268" y="22" width="248" height="162" fill="#8c8c8c"/>
+            <text x="1392" y="44" textAnchor="middle" fontSize="11" fontWeight="bold" fill="white" letterSpacing="3">I N G Å N G</text>
+            <rect x="88" y="22" width="60" height="22" fill="#cc0000"/>
+            <text x="118" y="37" textAnchor="middle" fontSize="9" fontWeight="bold" fill="white">NÖDUTG.</text>
+            <rect x="180" y="74" width="128" height="124" fill="#f07800" rx="2"/>
+            <text x="244" y="140" textAnchor="middle" fontSize="16" fontWeight="bold" fill="white">JAMF</text>
+            <rect x="332" y="74" width="112" height="124" fill="#f07800" rx="2"/>
+            <text x="388" y="133" textAnchor="middle" fontSize="15" fontWeight="bold" fill="white">HoS</text>
+            <rect x="466" y="74" width="96" height="124" fill="#f07800" rx="2"/>
+            <text x="514" y="133" textAnchor="middle" fontSize="12" fontWeight="bold" fill="white">SKOLON</text>
+            <rect x="596" y="74" width="104" height="124" fill="#f07800" rx="2"/>
+            <text x="648" y="133" textAnchor="middle" fontSize="11" fontWeight="bold" fill="white">INFOMENTOR</text>
+            <rect x="730" y="74" width="124" height="124" fill="#f07800" rx="2"/>
+            <text x="792" y="140" textAnchor="middle" fontSize="22" fontWeight="bold" fill="white">ILT</text>
+            <rect x="876" y="74" width="112" height="124" fill="#f07800" rx="2"/>
+            <text x="932" y="140" textAnchor="middle" fontSize="15" fontWeight="bold" fill="white">MAGMA</text>
+            <rect x="1088" y="74" width="152" height="124" fill="#f07800" rx="2"/>
+            <text x="1164" y="140" textAnchor="middle" fontSize="26" fontWeight="bold" fill="white">NE</text>
+            <rect x="1012" y="74" width="50" height="124" fill="#2a8820"/>
+            {"BLOMMOR".split("").map((ch,i) => <text key={i} x="1037" y={92+i*13} textAnchor="middle" fontSize="9" fontWeight="bold" fill="white">{ch}</text>)}
+            <rect x="88" y="178" width="56" height="38" fill="#d0d0d0" stroke="#888" strokeWidth="1"/>
+            <text x="116" y="191" textAnchor="middle" fontSize="9" fontWeight="bold">PELARE</text>
+            <text x="116" y="203" textAnchor="middle" fontSize="8" fill="#555">eluttg</text>
+            <text x="1244" y="200" fontSize="9" fontWeight="bold" fill="#333">NÖDUTG RULLSTOL</text>
+            <rect x="88" y="228" width="148" height="68" fill="#f07800" rx="2"/>
+            <text x="162" y="265" textAnchor="middle" fontSize="9" fontWeight="bold" fill="white">INTERNETSTIFTELSEN</text>
+            <rect x="244" y="228" width="96" height="68" fill="#f07800" rx="2"/>
+            <text x="292" y="265" textAnchor="middle" fontSize="12" fontWeight="bold" fill="white">EVERWAY</text>
+            <rect x="364" y="228" width="80" height="68" fill="#f07800" rx="2"/>
+            <text x="404" y="265" textAnchor="middle" fontSize="13" fontWeight="bold" fill="white">ATEA</text>
+            <rect x="580" y="210" width="370" height="48" fill="#c8a000"/>
+            <text x="765" y="239" textAnchor="middle" fontSize="13" fontWeight="bold" fill="white" letterSpacing="4">L Å N G B O R D</text>
+            {[166,318,452,582,716,862,992,1156,1272].map((x,i) => <g key={i}><rect x={x} y={296} width={i===0||i===4?56:52} height={i===0||i===4?38:22} fill="#d0d0d0" stroke="#888" strokeWidth="1"/><text x={x+(i===0||i===4?28:26)} y={309} textAnchor="middle" fontSize="9" fontWeight="bold">PELARE</text></g>)}
+            <rect x="240" y="296" width="64" height="22" fill="#d4a020"/>
+            <text x="272" y="311" textAnchor="middle" fontSize="9" fontWeight="bold">BLOMMOR</text>
+            <rect x="384" y="296" width="64" height="22" fill="#d4a020"/>
+            <text x="416" y="311" textAnchor="middle" fontSize="9" fontWeight="bold">BLOMMOR</text>
+            <rect x="570" y="328" width="150" height="72" fill="#f07800" rx="2"/>
+            <text x="645" y="367" textAnchor="middle" fontSize="16" fontWeight="bold" fill="white">TRELSON</text>
+            <rect x="742" y="328" width="140" height="72" fill="#f07800" rx="2"/>
+            <text x="812" y="367" textAnchor="middle" fontSize="16" fontWeight="bold" fill="white">BINOGI</text>
+            <rect x="88" y="406" width="64" height="22" fill="white" stroke="#888" strokeWidth="1"/>
+            <text x="120" y="421" textAnchor="middle" fontSize="10" fontWeight="bold">DÖRR</text>
+            <rect x="264" y="406" width="64" height="22" fill="white" stroke="#888" strokeWidth="1"/>
+            <text x="296" y="421" textAnchor="middle" fontSize="10" fontWeight="bold">DÖRR</text>
+            <rect x="484" y="406" width="72" height="22" fill="white" stroke="#888" strokeWidth="1"/>
+            <text x="520" y="421" textAnchor="middle" fontSize="10" fontWeight="bold">DÖRRAR</text>
+            <rect x="868" y="406" width="72" height="22" fill="white" stroke="#888" strokeWidth="1"/>
+            <text x="904" y="421" textAnchor="middle" fontSize="10" fontWeight="bold">DÖRRAR</text>
+            <rect x="1020" y="406" width="348" height="22" fill="#f08080"/>
+            <text x="1194" y="421" textAnchor="middle" fontSize="10" fontWeight="bold" letterSpacing="3">R E C E P T I O N</text>
+            <rect x="1368" y="406" width="148" height="22" fill="#333"/>
+            <text x="1442" y="421" textAnchor="middle" fontSize="8" fontWeight="bold" fill="white">TRAPPHUS/SPEEDGATE</text>
+            <rect x="88" y="428" width="64" height="22" fill="white" stroke="#888" strokeWidth="1"/>
+            <text x="120" y="443" textAnchor="middle" fontSize="10">WC</text>
+            {"SOLLENTUNASALEN".split("").map((letter,i) => (
+              <g key={i}>
+                <rect x={200+i*48} y={428} width={48} height={22} fill="#e8c000" stroke="#ccc" strokeWidth="0.5"/>
+                <text x={224+i*48} y={443} textAnchor="middle" fontSize="11" fontWeight="bold">{letter}</text>
+              </g>
+            ))}
+          </svg>
+        </div>
+      </div>
+      <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+        <div className="px-4 py-3 bg-slate-700 text-white"><h2 className="font-bold text-sm">🏪 Leverantörer – önskemål bord och övrigt</h2></div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead><tr className="bg-slate-100 text-slate-600 text-left">
+              <th className="px-3 py-2 font-semibold w-36">Leverantör</th>
+              <th className="px-3 py-2 font-semibold">Önskemål bord</th>
+              <th className="px-3 py-2 font-semibold w-20">Övrigt</th>
+            </tr></thead>
+            <tbody>
+              {SUPPLIERS.map((s, i) => (
+                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}>
+                  <td className="px-3 py-2 font-semibold text-slate-800">{s.name}</td>
+                  <td className="px-3 py-2 text-slate-600">{s.bord}</td>
+                  <td className="px-3 py-2 text-slate-500">{s.ovrigt}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TabInfo() {
+  return (
+    <div className="space-y-4 max-w-2xl">
+      <div className="rounded-lg border border-purple-200 bg-purple-50 overflow-hidden">
+        <div className="px-4 py-3 bg-purple-600 text-white">
+          <h2 className="font-bold text-sm">🌸 Blommor och brickor</h2>
+        </div>
+        <div className="px-4 py-4 space-y-4 text-sm text-slate-700">
+
+          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">🏢</span> Turebergshuset
+            </div>
+            <p>Alla blomsterbuketter som ska delas ut i <strong>Turebergshuset</strong> finns på <strong>Makerzone</strong> i det lilla grupprummet.</p>
+            <p>Där finns också alla <strong>brickor</strong> som ska delas ut.</p>
+            <div className="mt-2 rounded bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-700">
+              <strong>🌸 Sollentunasalen:</strong> Blommor till talare i Sollentunasalen står i Sollentunasalen längst fram vid podiet.
+            </div>
+            <div className="mt-3 rounded bg-purple-50 border border-purple-200 px-3 py-2 text-xs space-y-1">
+              <div className="flex items-center gap-2"><span>🌸</span><span><strong>Externa föreläsare</strong> får blommor + bricka</span></div>
+              <div className="flex items-center gap-2"><span>🏆</span><span><strong>Interna föreläsare</strong> får en bricka</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">🎤</span> Sollentunasalen
+            </div>
+            <p>Blommor och bricka till talare i <strong>Sollentunasalen</strong> står i <strong>Sollentunasalen längst fram vid podiet</strong>.</p>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">📡</span> Satelliten
+            </div>
+            <p>Blommor och brickor som ska delas ut i <strong>Satelliten</strong> står i <strong>VIP-rummet</strong>.</p>
+            <div className="mt-2 inline-flex items-center gap-2 bg-amber-100 border border-amber-300 rounded px-3 py-1.5 text-sm font-bold text-amber-800">
+              <span>🔑</span> Kod: 2122
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab] = useState("timeline");
+  const [searchValue, setSearchValue] = useState("");
+  const TABS = [
+    { id: "timeline",     label: "Tidslinje" },
+    { id: "instructions", label: "Möta föreläsare" },
+    { id: "personal",     label: "Personal" },
+    { id: "moblering",    label: "Möblering utställare" },
+    { id: "info",         label: "Information" },
+  ];
+  return (
+    <div className="min-h-screen bg-slate-50" style={{fontFamily:'"Segoe UI", system-ui, sans-serif'}}>
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-3 py-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h1 className="text-lg font-bold text-slate-800">SOLSKOL 2026 — Bemanningsplan</h1>
+              <p className="text-xs text-slate-400">Sök på namn för att hitta en persons uppdrag</p>
+            </div>
+          </div>
+          <div className="flex gap-1 mt-2 overflow-x-auto pb-1">
+            {TABS.map(t => (
+              <button key={t.id} onClick={() => { setTab(t.id); setSearchValue(""); }}
+                className="px-3 py-1 rounded-t text-xs font-semibold whitespace-nowrap transition-colors"
+                style={{ background: tab === t.id ? "#1d4ed8" : "transparent", color: tab === t.id ? "#fff" : "#94a3b8" }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+      <main className="max-w-5xl mx-auto px-3 py-3 pb-16">
+        {tab === "timeline"     && <TabTimeline searchQuery={searchValue} setSearchQuery={setSearchValue} />}
+        {tab === "instructions" && <TabInstructions />}
+        {tab === "personal"     && <TabPersonal />}
+        {tab === "moblering"    && <TabMoblering />}
+        {tab === "info"         && <TabInfo />}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
