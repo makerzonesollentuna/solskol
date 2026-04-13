@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLSKOL 2026 – Bemanningsplan v3</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+<style>
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif}
+.tab-btn{padding:4px 12px;border-radius:4px 4px 0 0;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#94a3b8;white-space:nowrap}
+.tab-btn.active{background:#1d4ed8;color:#fff}
+.search-box{width:100%;padding:8px 12px;border-radius:8px;background:white;border:1px solid #e2e8f0;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:8px}
+.block{border-radius:8px;overflow:hidden;margin-bottom:8px}
+.block-header{padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.block-label{font-size:14px;font-weight:600;color:#334155}
+.task{border-radius:6px;padding:8px;font-size:12px;margin-bottom:4px}
+.task-title{font-weight:600;color:#1e293b;margin-bottom:2px}
+.task-who{color:#1d4ed8}
+.task-note{color:#94a3b8;font-style:italic}
+.task-time{color:#64748b}
+.card{border-radius:8px;border:1px solid #e2e8f0;background:white;padding:16px;margin-bottom:12px}
+.card-title{font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pill{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:500;display:inline-block;margin:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 12px;background:#f1f5f9;color:#64748b;text-align:left;font-weight:600}
+td{padding:8px 12px}
+tr:nth-child(even) td{background:#f8fafc}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const e = React.createElement;
+const useState = React.useState;
+
+const PLAN_DATA = [
+  {
+    "time": "08:00–08:20",
+    "label": "Förberedelser + Registrering Scandic",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Ställa ut bord i entrén Turebergshuset",
+        "who": "Martin Wallén, Moa Österberg, Lasse Sundberg, Barbara Lundgren, Kaisa Humlebo",
+        "time": "08:00–08:20",
+        "note": "~20 min. Borden kommer kl 08:00, De svarta runda fikaborden kan placeras i mitten. Blir det trångt ställ in dem i Sollentunasalen. Karta till var borden ska stå finns under fliken möblering utställare. "
+      },
+      {
+        "task": "Ställa fram stolar Satelliten",
+        "who": "Ella Marjakangas, Johan Hesselgren, Elin Larsson",
+        "time": "08:00–09:00",
+        "note": "Stora scenen 120 st, Spegelsalen 50 st. Klart senast 09:30"
+      },
+      {
+        "task": "Registreringsdisk Scandic (7 pers)",
+        "who": "Isabell Weber, Katarina Edwinsson, Maria Högberg, Katja Lagerbäck, Åsa Börjesson, Maria Nygårds, Anna Lena Ekstrand",
+        "note": "Alla börjar 08:00"
+      },
+      {
+        "task": "Plan 5 – släppa in utställare 08:30–09:15",
+        "who": "Johan Lundgren, Maria Svedman",
+        "note": "Utställare behöver komma in"
+      },
+      {
+        "task": "VIP-rum Satelliten – iordningställ fika mm",
+        "who": "Annette Karmitsa, Jonas",
+        "time": "08:00",
+        "note": "Fika i VIP klart 09:15"
+      },
+      {
+        "task": "Sätta upp siffror i Satelliten",
+        "who": "Annette Karmitsa, Karin Hiller",
+        "time": "08:00",
+        "note": "Till reflektionsgrupper"
+      }
+    ]
+  },
+  {
+    "time": "08:20–09:15",
+    "label": "Invigning + Startföreläsning (Scandic)",
+    "type": "main",
+    "tasks": [
+      {
+        "task": "Registrering Scandic fortsätter",
+        "who": "Reg-teamet (7 pers)"
+      },
+      {
+        "task": "Invigning 08:20 (Soley)",
+        "who": "",
+        "note": "Intern"
+      },
+      {
+        "task": "Startföreläsning 08:30–09:15: Lars Strannegård",
+        "who": "",
+        "note": "EXTERN"
+      }
+    ]
+  },
+  {
+    "time": "Hela dagen",
+    "label": "🎫 RECEPTION & REGISTRERING – Översikt",
+    "type": "reception",
+    "tasks": [
+      {
+        "task": "08:00–09:15 Registrering SCANDIC (7 pers)",
+        "who": "Isabell Weber, Katarina Edwinsson, Maria Högberg, Katja Lagerbäck, Åsa Börjesson, Maria Nygårds, Anna Lena Ekstrand",
+        "note": "Alla börjar 08:00. Frigörs efter 09:15"
+      },
+      {
+        "task": "09:00– Reception TUREBERGSHUSET (1 pers)",
+        "who": "Ella Marjakangas",
+        "note": "Ensam 09:00–09:30"
+      },
+      {
+        "task": "09:30– Reception TUREBERGSHUSET (3 pers)",
+        "who": "Ella Marjakangas, Isabell Weber, Katarina Edwinsson",
+        "note": "Isabell och Katarina tar med sig de besökarbadges som är kvar från Satelliten. "
+      },
+      {
+        "task": "12:00– Reception TUREBERGSHUSET efter lunch (2 pers)",
+        "who": "Jennie Flodin, Soudabeh Bagheri",
+        "note": "Registrering EM. Jennie borta 14:00–14:30"
+      },
+      {
+        "task": "09:00– Reception SATELLITEN",
+        "who": "Elin Larsson, Johan Hesselgren",
+        "note": "Hela dagen"
+      }
+    ]
+  },
+  {
+    "time": "Hela dagen",
+    "label": "🔑 NYCKELPIGOR – Dörröppning Plan 3 & 4",
+    "type": "keys",
+    "tasks": [
+      {
+        "task": "Plan 4 – hela dagen",
+        "who": "Katarina Österberg (till 15:45), Carina Baas (till 16:00)",
+        "note": "Stationerade på plan 4, öppnar alla dörrar"
+      },
+      {
+        "task": "Plan 3 FM (09:30–12:00)",
+        "who": "Behövs inte någon detta pass",
+        "note": "Ledig efter registrering, lätt schema. Öppnar plan 3 inför varje pass"
+      },
+      {
+        "task": "Plan 3 EM (12:30–15:00)",
+        "who": "Anna Schiller",
+        "note": "Redan stationerad plan 3. Öppnar+möter föreläsare Viby"
+      },
+      {
+        "task": "Backup nyckel",
+        "who": "Maria Svedman (FM), Katarina Edwinsson (FM) Åsa Börjesson ",
+        "note": "Kan rycka in vid behov – lätta scheman efter reg"
+      }
+    ]
+  },
+  {
+    "time": "09:00",
+    "label": "Turebergshuset + Satelliten börjar bemannas",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Reception/entrévärd Turebergshuset (1 pers, fler 09:30)",
+        "who": "Ella Marjakangas",
+        "time": "09:00",
+        "note": "Ensam till 09:30, då fler ansluter"
+      },
+      {
+        "task": "Teknik på plats överallt",
+        "who": "Göran (plan 3-5) , IT-support (Sollentunasalaen), Jonas (Satelliten)",
+        "time": "09:00"
+      },
+      {
+        "task": "Fikagrupp redo",
+        "who": "David, Kathi, Agneta Bodin, Sandra Bagge",
+        "time": "09:00",
+        "note": "Fika ska vara redo från Internservice så det är bara att hålla koll på att inget är slut och fixa lite. "
+      },
+      {
+        "task": "Satelliten reception öppnar",
+        "who": "Elin Larsson, Johan Hesselgren",
+        "time": "09:00",
+        "note": "Stina SZ ansluter 10:30 backup"
+      }
+    ]
+  },
+  {
+    "time": "09:15–09:45",
+    "label": "Förflyttning från Scandic + Fika",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "🌸 Blommor till Lars Strannegård (extern, enda pass)",
+        "who": "Lisa Eriksson eller Soley",
+        "time": "09:15",
+        "flower": true
+      },
+      {
+        "task": "Fika serveras utanför varje föreläsningsrum",
+        "who": "Internservice",
+        "note": "Fikagrupp: David, Kathi, Agneta, Sandra kan hålla koll så att allt flyter på."
+      },
+      {
+        "task": "Reception Turebergshuset – fler ansluter 09:30",
+        "who": "Ella Marjakangas, Isabell Weber, Katarina Edwinsson",
+        "time": "09:30",
+        "note": "Folk börjar anlända"
+      }
+    ]
+  },
+  {
+    "time": "09:30",
+    "label": "Möta föreläsare inför Pass 1 (09:45–10:30)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": " Plan 4: Katarina Ö, Carina Baas",
+        "time": "09:30",
+        "note": "Öppna senast 09:35"
+      },
+      {
+        "task": "Sollentunasalen: Patricia Diaz (EXTERN)",
+        "who": "Barbara Lundgren möter utanför Sollentunasalen",
+        "note": "Föreläser igen pass 3 → blommor efter pass 3. Barbara inleder (1 min)"
+      },
+      {
+        "task": "Satelliten: Anne Marie Körling (EXTERN)",
+        "who": "Katja Lagerbäck möter utanför Satelliten",
+        "note": "Föreläser igen pass 2 → blommor efter pass 2. Katja Lagerbäck inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Camilla Askebäck Diaz (EXTERN)",
+        "who": "Jonas Westholm möter utanför Spegelsalen",
+        "note": "Föreläser igen pass 2 → blommor efter pass 2. Lisa inleder"
+      },
+      {
+        "task": "Järvafältet: Nettan Pira (intern)",
+        "who": "Frida Signevik möter utanför Järvafältet"
+      },
+      {
+        "task": "Bagarby P4: Anna Lundholm Ehn m.fl. (intern)",
+        "who": "Katarina Ö (befintlig plan 4)"
+      },
+      {
+        "task": "Rotebro P4: Cia Silverberg (intern)",
+        "who": "Carina Baas (befintlig plan 4)"
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson (extern, EJ blommor)",
+        "who": "Erik Jaråker låser upp dörren",
+        "note": "Föreläser igen pass 2. Inga blommor."
+      }
+    ]
+  },
+  {
+    "time": "10:30",
+    "label": "Pass 1 slut – Brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🏆 Brickor interna P4 (Bagarby, Rotebro)",
+        "who": "Katarina Ö",
+        "flower": true
+      },
+      {
+        "task": "🏆 Bricka Nettan Pira (Järvafältet)",
+        "who": "Frida Signevik",
+        "flower": true
+      },
+      {
+        "task": "🏆 Bricka Cia Silverberg (Rotebro P4)",
+        "who": "Carina Baas",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "10:30–10:45",
+    "label": "Förflyttning",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Alla på poster, redo för pass 2",
+        "who": ""
+      }
+    ]
+  },
+  {
+    "time": "10:30",
+    "label": "Möta föreläsare inför Pass 2 (10:45–11:30)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 4: Katarina Ö + Carina Baas",
+        "time": "10:30",
+        "note": "Öppna senast 10:35"
+      },
+      {
+        "task": "Sollentunasalen: Camilla Askebäck Diaz (EXTERN, sista pass)",
+        "who": "Ann Eriksson Johansson möter utanför Sollentunasalen",
+        "note": "Ann Eriksson Johansson inleder (1 min)"
+      },
+      {
+        "task": "Satelliten: Susanne Kjällander (EXTERN, enda pass)",
+        "who": "Ingmari Brockland möter utanför Satelliten (börjar 10:30)",
+        "note": "Ingmari Brockland inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Helen Larsson (EXTERN)",
+        "who": "Lisa Eriksson möter utanför Spegelsalen",
+        "note": "Föreläser igen pass 3 → blommor efter pass 3"
+      },
+      {
+        "task": "Järvafältet: Anne Marie Körling (EXTERN, sista pass)",
+        "who": "Frida Signevik möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Isabelle Lönberg (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Bagarby P4: Vahida Sabani (intern)",
+        "who": "Katja Lagerbäck"
+      },
+      {
+        "task": "Rotebro P4: Susanne Lindberg m.fl. (intern)",
+        "who": "INSTÄLLD",
+        "note": ""
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson (extern, EJ blommor, sista pass)",
+        "who": "Ingen behöver möta upp"
+      }
+    ]
+  },
+  {
+    "time": "11:30",
+    "label": "Pass 2 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Anne Marie Körling (sista pass) – Järvafältet",
+        "who": "Frida Signevik",
+        "flower": true
+      },
+      {
+        "task": "🌸 Camilla Askebäck Diaz (sista pass) – Sollentunasalen",
+        "who": "Ann Eriksson Johansson",
+        "flower": true
+      },
+      {
+        "task": "🌸 Susanne Kjällander (enda pass) – Satelliten",
+        "who": "Ingmari Brockland",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor interna P4 (Tureberg, Bagarby, Rotebro)",
+        "who": "Katja Lagerbäck,  Frida Signevik, Katarina Ö",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "11:30–12:00",
+    "label": "Förflyttning + Reflektion",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning 11:30–11:40",
+        "who": ""
+      },
+      {
+        "task": "Reflektion 11:40–12:00",
+        "who": "",
+        "note": "Siffror til grupper - Karin + Annette (dagen innan)"
+      },
+      {
+        "task": "Reflektionshjälp Plan 4",
+        "who": "Katarina Ö / Carina Baas"
+      },
+      {
+        "task": "Reflektionshjälp Plan 5",
+        "who": "Johan Lundgren. Åsa Börjesson"
+      },
+      {
+        "task": "Reflektionshjälp Satelliten",
+        "who": "Elin Larsson, Johan Hesselgren"
+      },
+      {
+        "task": "Reflektionshjälp Sollentunasalen",
+        "who": "Lasse Sundberg, Anna Lena Ekstrand"
+      }
+    ]
+  },
+  {
+    "time": "12:00–13:00",
+    "label": "LUNCH – Skiftbyte",
+    "type": "lunch",
+    "tasks": [
+      {
+        "task": "FM-personal slutar",
+        "who": "Isabell, Kat E, Maria Svedman, Katja, Åsa, Frida S, Barbara, Lasse, Moa, Martin, Maria Högberg"
+      },
+      {
+        "task": "Fikagrupp EM",
+        "who": "David, Kathi, Ylva + Agneta, Sandra (till 14:00)",
+        "note": "Ylva tar över med David+Kathi efter 14:00"
+      },
+      {
+        "task": "Reception Turebergshuset (2 pers)",
+        "who": "Jennie Flodin, Soudabeh Bagheri",
+        "note": "Registrering EM"
+      },
+      {
+        "task": "🔊 Binogi pris – högtalare+mikrofon",
+        "who": "Erik Jaråker hämtar från Makerzone",
+        "note": "Under lunchen, ska vara på plats klockan 13.00"
+      }
+    ]
+  },
+  {
+    "time": "12:45",
+    "label": "Möta föreläsare inför Pass 3 (13:00–13:45)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 3: Anna Schiller | Plan 4: Katarina Ö + Carina Baas",
+        "time": "12:45",
+        "note": "Öppna senast 12:50"
+      },
+      {
+        "task": "Satelliten: Patricia Diaz (EXTERN, sista pass)",
+        "who": "Ann Eriksson Johansson möter utanför Satelliten",
+        "note": "Ann inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Helen Larsson (EXTERN, sista pass)",
+        "who": "Lisa Eriksson möter utanför Spegelsalen",
+        "note": "Lisa inleder"
+      },
+      {
+        "task": "Järvafältet: Chiemi Lundqvist m.fl. (intern)",
+        "who": "Anita Oliver möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Maria Högberg (HÅLLER PASS)",
+        "who": "Ella Marjakangas",
+        "note": ""
+      },
+      {
+        "task": "Bagarby P4: Karin Nacke m.fl. (intern)",
+        "who": "Annette Karmitsa"
+      },
+      {
+        "task": "Rotebro P4: Naturskolan (intern)",
+        "who": "Maria Nyström"
+      },
+      {
+        "task": "Slottsparken P4: Karin Edlund (intern)",
+        "who": "Carina Baas"
+      },
+      {
+        "task": "Helenelund P4: Nathalie Ilonen (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Häggvik P4: Caroline Lindfors (intern)",
+        "who": "Frida ER"
+      },
+      {
+        "task": "Vaxmora P4: Banaz Berdman (intern)",
+        "who": "Anna Lena Ekstrand"
+      },
+      {
+        "task": "Makerzone: Kristina Alexandersson ",
+        "who": "Ingen behövs"
+      },
+      {
+        "task": "Viby P3: Richard Duncan (leverantör)",
+        "who": "Anna Schiller"
+      }
+    ]
+  },
+  {
+    "time": "13:45",
+    "label": "Pass 3 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Patricia Diaz – Satelliten",
+        "who": "Ann Eriksson Johansson",
+        "flower": true
+      },
+      {
+        "task": "🌸 Helen Larsson – Spegelsalen",
+        "who": "Lisa Eriksson",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor alla interna pass 3",
+        "who": "Maria Nyström, Annette, Anita, Anna Lena Ekstrand, Anna Schiller, Frida ER, Katarina Ö, Carina Baas, Ella Marjakangas, Karin Hiller ger bricka till de i Spegelsalen i Satelliten",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "13:45–14:00",
+    "label": "Förflyttning",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning",
+        "who": ""
+      }
+    ]
+  },
+  {
+    "time": "13:45",
+    "label": "Möta föreläsare inför Pass 4 (14:00–14:45)",
+    "type": "session",
+    "tasks": [
+      {
+        "task": "🔑 Nyckelpigor: öppna dörrar",
+        "who": "Plan 3: Anna Schiller | Plan 4: Katarina Ö + Carina Baas",
+        "time": "13:45",
+        "note": "Öppna senast 13:50"
+      },
+      {
+        "task": "Satelliten: Martin Sörensson (EXTERN, enda pass)",
+        "who": "Jonas Westholm möter utanför Satelliten",
+        "note": "Jonas Westholm inleder (1 min)"
+      },
+      {
+        "task": "Spegelsalen: Gärdesskolan (intern)",
+        "who": "Karin Hiller",
+        "note": "Karin inleder 1 minut"
+      },
+      {
+        "task": "Järvafältet: Margareta Liljeqvist (intern)",
+        "who": "Anita Oliver möter utanför Järvafältet"
+      },
+      {
+        "task": "Tureberg P4: Fabienne Mahram Nia (intern)",
+        "who": "Annette Karmitsa"
+      },
+      {
+        "task": "Bagarby P4: Christina Israelsson m.fl. (intern)",
+        "who": "Katarina Ö"
+      },
+      {
+        "task": "Rotebro P4: Sofie Petersson (intern)",
+        "who": "Carina Baas"
+      },
+      {
+        "task": "Slottsparken P4: Maria Glad (HÅLLER PASS)",
+        "who": "Stina SZ"
+      },
+      {
+        "task": "Helenelund P4: Kaisa Humlebo (HÅLLER PASS)",
+        "who": "Kanske klarar sig"
+      },
+      {
+        "task": "Häggvik P4: Tobias Engborg (intern)",
+        "who": "Frida ER"
+      },
+      {
+        "task": "Vaxmora P4: Emanuela Falcao F (intern)",
+        "who": "Anna Lena Ekstrand"
+      },
+      {
+        "task": "Makerzone: Jannike Tillå (extern, EJ blommor)",
+        "who": ""
+      },
+      {
+        "task": "Europa P4: Araceli m.fl. (intern)",
+        "who": "Johan Lundgren"
+      },
+      {
+        "task": "Viby P3: Richard Duncan (leverantör)",
+        "who": "Anna Schiller"
+      },
+      {
+        "task": "Plan 5: dörröppnare",
+        "who": "Maria Nygårds"
+      }
+    ]
+  },
+  {
+    "time": "14:00",
+    "label": "Under Pass 4 – praktiska uppgifter",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "🔨 Plocka bort utställarbord ~20 min",
+        "who": "Erik Jaråker, Johan Lundgren, David, Kathi",
+        "time": "14:00",
+        "note": "4 pers + internservice"
+      }
+    ]
+  },
+  {
+    "time": "14:45",
+    "label": "Pass 4 slut – Blommor & brickor",
+    "type": "flower",
+    "tasks": [
+      {
+        "task": "🌸 Martin Sörensson – Satelliten",
+        "who": "Jonas Westholm",
+        "flower": true
+      },
+      {
+        "task": "🏆 Brickor alla interna pass 4",
+        "who": "Annette, Anna Lena Ekstrand, Maria Nygårds, Stina SZ, Frida ER, Johan Lundgren, Anna Schiller, Carina Baas",
+        "note": "ALE ger till Kaisa med",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "14:45–15:30",
+    "label": "Förflyttning + Reflektion",
+    "type": "break",
+    "tasks": [
+      {
+        "task": "Förflyttning 14:45–15:00",
+        "who": ""
+      },
+      {
+        "task": "Reflektion 15:00–15:30",
+        "who": ""
+      },
+      {
+        "task": "Reflektionshjälp Plan 4",
+        "who": "Katarina Ö / Carina"
+      },
+      {
+        "task": "Reflektionshjälp Plan 5",
+        "who": "Maria Nygårds, Frida ER"
+      },
+      {
+        "task": "Reflektionshjälp Satelliten",
+        "who": "Elin Larsson, Johan Hesselgren"
+      },
+      {
+        "task": "Reflektionshjälp Plan 3",
+        "who": "Anna Lena Ekstrand"
+      }
+    ]
+  },
+  {
+    "time": "15:30–16:45",
+    "label": "Förflyttning + Avslutning Scandic",
+    "type": "main",
+    "tasks": [
+      {
+        "task": "Ställa tillbaka stolar Spegelsalen + städa ur VIP-rum",
+        "who": "Kaisa Humlebo, Frida ER, Soudabeh Bagheri",
+        "time": "15:00–16:00",
+        "note": "Spegelsalen stolar tillbaka + VIP-rum töms och städas"
+      },
+      {
+        "task": "Scandic 16:00–16:45: Kristina Bähr (EXTERN)",
+        "who": "Lisa Eriksson"
+      },
+      {
+        "task": "🌸 Blommor Kristina Bähr",
+        "who": "Lisa Eriksson",
+        "time": "16:45",
+        "flower": true
+      }
+    ]
+  },
+  {
+    "time": "16:45",
+    "label": "Efter Scandic – städning och transport",
+    "type": "prep",
+    "tasks": [
+      {
+        "task": "Ta bort vepor, ballonger och material – transportera till Satelliten",
+        "who": "Maria Högberg, Erik Jaråker",
+        "time": "16:45",
+        "note": "Efter sista föreläsningen på Scandic"
+      }
+    ]
+  }
+];
+
+const SUPPLIERS = [
+  {
+    "name": "Binogi",
+    "bord": "1 bord, 2 stolar",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Trelson",
+    "bord": "1 bord, 2 stolar",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Hands on Science",
+    "bord": "1 bord, 1 stol",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Skolon",
+    "bord": "Inga bord/stolar – har egen monter",
+    "ovrigt": "El"
+  },
+  {
+    "name": "ILT",
+    "bord": "2 bord + 1 runt högt bord",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Everway",
+    "bord": "1 bord, 1 stol + självgående bord vid aktiviteter",
+    "ovrigt": "El"
+  },
+  {
+    "name": "NE",
+    "bord": "1 lägre stort bord + 1 mindre högt bord",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Jamf",
+    "bord": "1 bord, 2 stolar",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Infomentor",
+    "bord": "Inga bord/stolar – har egen monter",
+    "ovrigt": "El"
+  },
+  {
+    "name": "Internetstiftelsen",
+    "bord": "Självgående bord",
+    "ovrigt": "El?"
+  },
+  {
+    "name": "Magma",
+    "bord": "1–2 ståbord",
+    "ovrigt": "El"
+  },
+  {
+    "name": "ATEA",
+    "bord": "2 ståbord, 1 hurtsch, 1 stol",
+    "ovrigt": "El"
+  }
+];
+
+const INSTRUCTIONS = {
+  meetSpeaker: [
+    "Var på plats SENAST 15 min före passets start utanför rätt sal.",
+    "Välkomna föreläsaren, presentera dig, fråga om hen behöver något.",
+    "Visa toaletter och säg att det finns vatten i rummet.",
+    'Informera om tiden: "Du har 45 min, viktigt att inte dra över tiden."',
+    "PÅMINN om PA/mikrofon i: Scandic, Sollentunasalen, Satelliten, Järvafältet.",
+    "Informera om att någon kommer att komma EFTER passet för att tacka.",
+  ],
+  twoPassSpeakers: [
+    { name: "Patricia Diaz", passes: "Pass 1 (Sollentunasalen) + Pass 3 (Satelliten)", flowers: "efter pass 3" },
+    { name: "Anne Marie Körling", passes: "Pass 1 (Satelliten) + Pass 2 (Järvafältet)", flowers: "efter pass 2" },
+    { name: "Camilla Askebäck Diaz", passes: "Pass 1 (Spegelsalen) + Pass 2 (Sollentunasalen)", flowers: "efter pass 2" },
+    { name: "Helen Larsson", passes: "Pass 2 (Spegelsalen) + Pass 3 (Spegelsalen)", flowers: "efter pass 3" },
+    { name: "Kristina Alexandersson", passes: "Pass 1–2 (Makerzone)", flowers: "EJ blommor" },
+    { name: "Richard Duncan", passes: "Pass 3–4 (Viby P3)", flowers: "bricka (leverantör)" },
+  ],
+  floatingStaff: ["Lisa Eriksson", "Anna Lena Ekstrand", "Ann Eriksson Johansson", "Ingmari Brockland"],
+  fikaStaff: ["David", "Kathi", "Agneta Bodin (till 14:00)", "Sandra Bagge (till 14:00)", "Ylva Färstedt (EM)"],
+};
+
+const TYPE_STYLE = {
+  prep:      { border:"#fcd34d", bg:"#fffbeb", badge:"background:#fde68a;color:#78350f" },
+  main:      { border:"#bae6fd", bg:"#f0f9ff", badge:"background:#bae6fd;color:#0c4a6e" },
+  reception: { border:"#fda4af", bg:"#fff1f2", badge:"background:#fecdd3;color:#9f1239" },
+  keys:      { border:"#67e8f9", bg:"#ecfeff", badge:"background:#cffafe;color:#164e63" },
+  break:     { border:"#d6d3d1", bg:"#fafaf9", badge:"background:#e7e5e4;color:#44403c" },
+  session:   { border:"#6ee7b7", bg:"#f0fdf4", badge:"background:#a7f3d0;color:#064e3b" },
+  flower:    { border:"#d8b4fe", bg:"#faf5ff", badge:"background:#e9d5ff;color:#581c87" },
+  lunch:     { border:"#fed7aa", bg:"#fff7ed", badge:"background:#fdba74;color:#7c2d12" },
+};
+
+function TaskRow({task}) {
+  const bg = task.flower ? "background:#f3e8ff;border:1px solid #d8b4fe" : "background:rgba(255,255,255,0.8);border:1px solid #f1f5f9";
+  return e("div", {className:"task", style:{cssText:bg}},
+    e("div", {className:"task-title"}, task.task),
+    task.who ? e("div", {className:"task-who"}, task.who) : null,
+    e("div", {style:{display:"flex",gap:"12px",flexWrap:"wrap",marginTop:"2px"}},
+      task.time ? e("span", {className:"task-time"}, task.time) : null,
+      task.note ? e("span", {className:"task-note"}, task.note) : null,
+    )
+  );
+}
+
+function TimeBlock({block, searchQuery}) {
+  const style = TYPE_STYLE[block.type] || TYPE_STYLE.break;
+  const q = searchQuery ? searchQuery.toLowerCase() : "";
+  const visibleTasks = !q ? block.tasks : block.tasks.filter(t =>
+    [t.task, t.who||"", t.note||""].some(s => s.toLowerCase().includes(q))
+  );
+  const blockMatches = q && [block.label, block.time].some(s => s.toLowerCase().includes(q));
+  const tasksToShow = blockMatches ? block.tasks : visibleTasks;
+  if (q && tasksToShow.length === 0) return null;
+  return e("div", {className:"block", style:{border:"1px solid "+style.border, background:style.bg}},
+    e("div", {className:"block-header"},
+      e("span", {className:"badge", style:{cssText:style.badge}}, block.time),
+      e("span", {className:"block-label"}, block.label)
+    ),
+    e("div", {style:{padding:"0 12px 8px"}},
+      tasksToShow.map((task, i) => e(TaskRow, {key:i, task}))
+    )
+  );
+}
+
+function TabTimeline({searchQuery, setSearchQuery}) {
+  return e("div", null,
+    e("input", {className:"search-box", placeholder:"🔍 Sök person, sal eller uppgift...", value:searchQuery, onChange:ev=>setSearchQuery(ev.target.value)}),
+    PLAN_DATA.map((block, i) => e(TimeBlock, {key:i, block, searchQuery}))
+  );
+}
+
+function TabInstructions() {
+  return e("div", {style:{display:"flex",flexDirection:"column",gap:"16px"}},
+    e("div", {className:"block", style:{border:"1px solid #6ee7b7", background:"#f0fdf4"}},
+      e("div", {className:"block-header", style:{background:"#059669"}},
+        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "📋 Instruktioner – Möta föreläsare")
+      ),
+      e("ol", {style:{padding:"12px 16px",margin:0}},
+        INSTRUCTIONS.meetSpeaker.map((line,i) =>
+          e("li", {key:i, style:{display:"flex",gap:"8px",fontSize:"14px",color:"#334155",marginBottom:"8px"}},
+            e("span", {style:{fontWeight:"700",color:"#059669",flexShrink:0}}, (i+1)+"."),
+            e("span", null, line)
+          )
+        )
+      )
+    ),
+    e("div", {className:"block", style:{border:"1px solid #bae6fd", background:"#f0f9ff"}},
+      e("div", {className:"block-header", style:{background:"#2563eb"}},
+        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "🔄 Föreläsare med två pass – blommor efter SISTA passet")
+      ),
+      e("div", {style:{padding:"8px 12px"}},
+        INSTRUCTIONS.twoPassSpeakers.map((s,i) =>
+          e("div", {key:i, style:{background:"rgba(255,255,255,0.8)",border:"1px solid #f1f5f9",borderRadius:"6px",padding:"8px",marginBottom:"6px",fontSize:"12px"}},
+            e("div", {style:{fontWeight:"600",color:"#1e293b"}}, s.name),
+            e("div", {style:{color:"#64748b"}}, s.passes),
+            e("div", {style:{color:"#7c3aed",fontWeight:"500"}}, "Blommor/bricka: "+s.flowers)
+          )
+        )
+      )
+    ),
+    e("div", {className:"block", style:{border:"1px solid #fcd34d", background:"#fffbeb"}},
+      e("div", {className:"block-header", style:{background:"#f59e0b"}},
+        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "⚡ Flytande personal")
+      ),
+      e("div", {style:{padding:"12px",display:"flex",flexWrap:"wrap",gap:"8px"}},
+        INSTRUCTIONS.floatingStaff.map((name,i) =>
+          e("span", {key:i, className:"pill", style:{background:"#fde68a",color:"#78350f"}}, name)
+        )
+      )
+    ),
+    e("div", {className:"block", style:{border:"1px solid #fed7aa", background:"#fff7ed"}},
+      e("div", {className:"block-header", style:{background:"#f97316"}},
+        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "☕ Fikagruppen")
+      ),
+      e("div", {style:{padding:"12px",display:"flex",flexWrap:"wrap",gap:"8px"}},
+        INSTRUCTIONS.fikaStaff.map((name,i) =>
+          e("span", {key:i, className:"pill", style:{background:"#fed7aa",color:"#7c2d12"}}, name)
+        )
+      )
+    )
+  );
+}
+
+function TabPersonal() {
+  const groups = {
+    "08:00 – slutar efter lunch": ["Isabell Weber","Katarina Edwinsson","Maria Högberg (till 11:30, tillbaka pass 13:00)","Katja Lagerbäck","Åsa Börjesson","Maria Svedman","Frida Signevik","Barbara Lundgren","Lasse Sundberg","Moa Österberg","Martin Wallén"],
+    "Hela dagen – FM och EM": ["Ella Marjakangas","Johan Lundgren","Katarina Österberg (slutar 15:45)","Carina Baas (slutar 16:00)","Elin Larsson","Johan Hesselgren","Annette Karmitsa","Karin Hiller","Maria Nyström","Maria Nygårds","Erik Jaråker","Jonas","Jennie Flodin (borta 14:00–14:30)"],
+    "FM – begränsad tid": ["Kaisa Humlebo (ej 08:20–12:00, håller pass 14:00–15:00)","Stina SZ (ej 08:00–10:30, ej 15:50–16:45)"],
+    "EM – börjar efter lunch": ["Frida ER","Anita Oliver","Anna Schiller","Soudabeh Bagheri","Ylva Färstedt"],
+    "Fikagrupp": ["David","Kathi","Agneta Bodin (till 14:00)","Sandra Bagge (till 14:00)","Ylva Färstedt (EM)"],
+    "Flytande / korta uppdrag": ["Lisa Eriksson","Anna Lena Ekstrand","Ann Eriksson Johansson","Ingmari Brockland"],
+    "Teknik": ["Göran (plan 3–5)","IT-support (Sollentunasalen)","Jonas (Satelliten)"],
+  };
+  return e("div", {style:{display:"flex",flexDirection:"column",gap:"12px"}},
+    Object.entries(groups).map(([group, names]) =>
+      e("div", {key:group, className:"block", style:{border:"1px solid #e2e8f0", background:"white"}},
+        e("div", {className:"block-header", style:{background:"#334155"}},
+          e("span", {style:{color:"white",fontWeight:"600",fontSize:"12px"}}, group)
+        ),
+        e("div", {style:{padding:"8px 12px",display:"flex",flexWrap:"wrap",gap:"6px"}},
+          names.map((name,i) =>
+            e("span", {key:i, className:"pill", style:{background:"#f1f5f9",color:"#475569"}}, name)
+          )
+        )
+      )
+    )
+  );
+}
+
+function TabMoblering() {
+  return e("div", {style:{display:"flex",flexDirection:"column",gap:"16px"}},
+    e("div", {style:{border:"1px solid #e2e8f0",borderRadius:"8px",background:"white",padding:"12px"}},
+      e("h2", {style:{fontWeight:"700",fontSize:"14px",color:"#334155",marginBottom:"12px"}}, "Skiss utställningssyta utanför Sollentunasalen"),
+      e("div", {style:{overflowX:"auto"}},
+        e("svg", {viewBox:"0 0 1560 490", style:{minWidth:"900px",width:"100%",fontFamily:"sans-serif"}},
+          e("rect",{x:"90",y:"0",width:"860",height:"22",fill:"#e8c000"}),
+          e("text",{x:"520",y:"15",textAnchor:"middle",fontSize:"12",fontWeight:"bold"},"24m"),
+          e("rect",{x:"988",y:"0",width:"484",height:"22",fill:"#e8c000"}),
+          e("text",{x:"1230",y:"15",textAnchor:"middle",fontSize:"12",fontWeight:"bold"},"6m"),
+          e("rect",{x:"0",y:"22",width:"88",height:"444",fill:"#90c8e0"}),
+          e("text",{transform:"translate(44,264) rotate(-90)",textAnchor:"middle",fontSize:"13",fontWeight:"bold"},"3m"),
+          e("rect",{x:"1516",y:"246",width:"44",height:"220",fill:"#e8c000"}),
+          e("text",{transform:"translate(1538,356) rotate(-90)",textAnchor:"middle",fontSize:"13",fontWeight:"bold"},"3m"),
+          e("rect",{x:"88",y:"22",width:"1428",height:"408",fill:"#e4e4e4",stroke:"#aaa",strokeWidth:"1"}),
+          e("rect",{x:"1268",y:"22",width:"248",height:"162",fill:"#8c8c8c"}),
+          e("text",{x:"1392",y:"44",textAnchor:"middle",fontSize:"11",fontWeight:"bold",fill:"white",letterSpacing:"3"},"I N G Å N G"),
+          e("rect",{x:"88",y:"22",width:"60",height:"22",fill:"#cc0000"}),
+          e("text",{x:"118",y:"37",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"NÖDUTG."),
+          e("rect",{x:"180",y:"74",width:"128",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"244",y:"140",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"JAMF"),
+          e("rect",{x:"332",y:"74",width:"112",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"388",y:"133",textAnchor:"middle",fontSize:"15",fontWeight:"bold",fill:"white"},"HoS"),
+          e("rect",{x:"466",y:"74",width:"96",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"514",y:"133",textAnchor:"middle",fontSize:"12",fontWeight:"bold",fill:"white"},"SKOLON"),
+          e("rect",{x:"596",y:"74",width:"104",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"648",y:"133",textAnchor:"middle",fontSize:"11",fontWeight:"bold",fill:"white"},"INFOMENTOR"),
+          e("rect",{x:"730",y:"74",width:"124",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"792",y:"140",textAnchor:"middle",fontSize:"22",fontWeight:"bold",fill:"white"},"ILT"),
+          e("rect",{x:"876",y:"74",width:"112",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"932",y:"140",textAnchor:"middle",fontSize:"15",fontWeight:"bold",fill:"white"},"MAGMA"),
+          e("rect",{x:"1088",y:"74",width:"152",height:"124",fill:"#f07800",rx:"2"}),
+          e("text",{x:"1164",y:"140",textAnchor:"middle",fontSize:"26",fontWeight:"bold",fill:"white"},"NE"),
+          e("rect",{x:"1012",y:"74",width:"50",height:"124",fill:"#2a8820"}),
+          e("text",{x:"1037",y:"92",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"B"),
+          e("text",{x:"1037",y:"105",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"L"),
+          e("text",{x:"1037",y:"118",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"O"),
+          e("text",{x:"1037",y:"131",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"M"),
+          e("text",{x:"1037",y:"144",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"M"),
+          e("text",{x:"1037",y:"157",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"O"),
+          e("text",{x:"1037",y:"170",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"R"),
+          e("rect",{x:"88",y:"228",width:"148",height:"68",fill:"#f07800",rx:"2"}),
+          e("text",{x:"162",y:"265",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"INTERNETSTIFTELSEN"),
+          e("rect",{x:"244",y:"228",width:"96",height:"68",fill:"#f07800",rx:"2"}),
+          e("text",{x:"292",y:"265",textAnchor:"middle",fontSize:"12",fontWeight:"bold",fill:"white"},"EVERWAY"),
+          e("rect",{x:"364",y:"228",width:"80",height:"68",fill:"#f07800",rx:"2"}),
+          e("text",{x:"404",y:"265",textAnchor:"middle",fontSize:"13",fontWeight:"bold",fill:"white"},"ATEA"),
+          e("rect",{x:"580",y:"210",width:"370",height:"48",fill:"#c8a000"}),
+          e("text",{x:"765",y:"239",textAnchor:"middle",fontSize:"13",fontWeight:"bold",fill:"white",letterSpacing:"4"},"L Å N G B O R D"),
+          e("rect",{x:"570",y:"328",width:"150",height:"72",fill:"#f07800",rx:"2"}),
+          e("text",{x:"645",y:"367",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"TRELSON"),
+          e("rect",{x:"742",y:"328",width:"140",height:"72",fill:"#f07800",rx:"2"}),
+          e("text",{x:"812",y:"367",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"BINOGI"),
+          e("rect",{x:"1020",y:"406",width:"348",height:"22",fill:"#f08080"}),
+          e("text",{x:"1194",y:"421",textAnchor:"middle",fontSize:"10",fontWeight:"bold",letterSpacing:"3"},"R E C E P T I O N"),
+          e("rect",{x:"1368",y:"406",width:"148",height:"22",fill:"#333"}),
+          e("text",{x:"1442",y:"421",textAnchor:"middle",fontSize:"8",fontWeight:"bold",fill:"white"},"TRAPPHUS/SPEEDGATE"),
+          e("rect",{x:"88",y:"428",width:"64",height:"22",fill:"white",stroke:"#888",strokeWidth:"1"}),
+          e("text",{x:"120",y:"443",textAnchor:"middle",fontSize:"10"},"WC"),
+          ..."SOLLENTUNASALEN".split("").map((letter,i) =>
+            e("g", {key:i},
+              e("rect",{x:200+i*48,y:428,width:48,height:22,fill:"#e8c000",stroke:"#ccc",strokeWidth:"0.5"}),
+              e("text",{x:224+i*48,y:443,textAnchor:"middle",fontSize:"11",fontWeight:"bold"},letter)
+            )
+          )
+        )
+      )
+    ),
+    e("div", {style:{border:"1px solid #e2e8f0",borderRadius:"8px",background:"white",overflow:"hidden"}},
+      e("div", {style:{padding:"12px 16px",background:"#334155"}},
+        e("h2", {style:{color:"white",fontWeight:"700",fontSize:"14px",margin:0}}, "🏪 Leverantörer – önskemål bord och övrigt")
+      ),
+      e("div", {style:{overflowX:"auto"}},
+        e("table", null,
+          e("thead", null, e("tr", null,
+            e("th", null, "Leverantör"),
+            e("th", null, "Önskemål bord"),
+            e("th", null, "Övrigt")
+          )),
+          e("tbody", null,
+            SUPPLIERS.map((s,i) => e("tr", {key:i},
+              e("td", {style:{fontWeight:"600"}}, s.name),
+              e("td", {style:{color:"#475569"}}, s.bord),
+              e("td", {style:{color:"#64748b"}}, s.ovrigt)
+            ))
+          )
+        )
+      )
+    )
+  );
+}
+
+function TabInfo() {
+  return e("div", {style:{maxWidth:"640px",display:"flex",flexDirection:"column",gap:"12px"}},
+    e("div", {style:{border:"1px solid #d8b4fe",borderRadius:"8px",background:"#faf5ff",overflow:"hidden"}},
+      e("div", {style:{padding:"12px 16px",background:"#7c3aed"}},
+        e("h2", {style:{color:"white",fontWeight:"700",fontSize:"14px",margin:0}}, "🌸 Blommor och brickor")
+      ),
+      e("div", {style:{padding:"16px",display:"flex",flexDirection:"column",gap:"12px"}},
+        e("div", {className:"card"},
+          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"🏢"), " Turebergshuset"),
+          e("p", {style:{margin:"0 0 8px",fontSize:"14px",color:"#334155"}}, "Alla blomsterbuketter som ska delas ut i Turebergshuset finns på ", e("strong",null,"Makerzone"), " i det lilla grupprummet. Där finns också alla ", e("strong",null,"brickor"), " som ska delas ut."),
+          e("div", {style:{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:"6px",padding:"8px",fontSize:"12px",color:"#475569",marginBottom:"8px"}},
+            e("strong",null,"🌸 Sollentunasalen:"), " Blommor till talare i Sollentunasalen står längst fram vid podiet."
+          ),
+          e("div", {style:{background:"#faf5ff",border:"1px solid #e9d5ff",borderRadius:"6px",padding:"8px",fontSize:"12px"}},
+            e("div", {style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}, e("span",null,"🌸"), e("span",null,e("strong",null,"Externa föreläsare"), " får blommor + bricka")),
+            e("div", {style:{display:"flex",alignItems:"center",gap:"8px"}}, e("span",null,"🏆"), e("span",null,e("strong",null,"Interna föreläsare"), " får en bricka"))
+          )
+        ),
+        e("div", {className:"card"},
+          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"🎤"), " Sollentunasalen"),
+          e("p", {style:{margin:0,fontSize:"14px",color:"#334155"}}, "Blommor och bricka till talare i ", e("strong",null,"Sollentunasalen"), " står längst fram vid ", e("strong",null,"podiet"), ".")
+        ),
+        e("div", {className:"card"},
+          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"📡"), " Satelliten"),
+          e("p", {style:{margin:"0 0 8px",fontSize:"14px",color:"#334155"}}, "Blommor och brickor som ska delas ut i ", e("strong",null,"Satelliten"), " står i ", e("strong",null,"VIP-rummet"), "."),
+          e("div", {style:{display:"inline-flex",alignItems:"center",gap:"8px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:"6px",padding:"6px 12px",fontSize:"14px",fontWeight:"700",color:"#92400e"}},
+            e("span",null,"🔑"), " Kod: 2122"
+          )
+        )
+      )
+    )
+  );
+}
+
+function App() {
+  const [tab, setTab] = React.useState("timeline");
+  const [searchValue, setSearchValue] = React.useState("");
+  const TABS = [
+    {id:"timeline", label:"Tidslinje"},
+    {id:"instructions", label:"Möta föreläsare"},
+    {id:"personal", label:"Personal"},
+    {id:"moblering", label:"Möblering utställare"},
+    {id:"info", label:"Information"},
+  ];
+  return e("div", {style:{minHeight:"100vh",background:"#f8fafc"}},
+    e("header", {style:{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(8px)",borderBottom:"1px solid #e2e8f0",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}},
+      e("div", {style:{maxWidth:"1024px",margin:"0 auto",padding:"8px 12px"}},
+        e("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between"}},
+          e("div", null,
+            e("h1", {style:{fontSize:"18px",fontWeight:"700",color:"#1e293b",margin:0}}, "SOLSKOL 2026 — Bemanningsplan"),
+            e("p", {style:{fontSize:"12px",color:"#94a3b8",margin:0}}, "Sök på namn för att hitta en persons uppdrag")
+          )
+        ),
+        e("div", {style:{display:"flex",gap:"4px",marginTop:"8px",overflowX:"auto",paddingBottom:"4px"}},
+          TABS.map(t => e("button", {
+            key:t.id,
+            className:"tab-btn"+(tab===t.id?" active":""),
+            onClick:()=>{setTab(t.id);setSearchValue("");}
+          }, t.label))
+        )
+      )
+    ),
+    e("main", {style:{maxWidth:"1024px",margin:"0 auto",padding:"12px",paddingBottom:"64px"}},
+      tab==="timeline"     ? e(TabTimeline, {searchQuery:searchValue, setSearchQuery:setSearchValue}) : null,
+      tab==="instructions" ? e(TabInstructions, null) : null,
+      tab==="personal"     ? e(TabPersonal, null) : null,
+      tab==="moblering"    ? e(TabMoblering, null) : null,
+      tab==="info"         ? e(TabInfo, null) : null
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(e(App, null));
+</script>
+</body>
+</html>
