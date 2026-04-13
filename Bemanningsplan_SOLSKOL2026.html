@@ -17,10 +17,8 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-
 const { useState } = React;
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
 const PLAN_DATA = [
   {
     "time": "08:00–08:20",
@@ -215,8 +213,8 @@ const PLAN_DATA = [
       },
       {
         "task": "Satelliten: Anne Marie Körling (EXTERN)",
-        "who": "Ingmari Brockland möter utanför Satelliten",
-        "note": "Föreläser igen pass 2 → blommor efter pass 2. Ingmari Brockland inleder (1 min)"
+        "who": "Katja Lagerbäck möter utanför Satelliten",
+        "note": "Föreläser igen pass 2 → blommor efter pass 2. Katja Lagerbäck inleder (1 min)"
       },
       {
         "task": "Spegelsalen: Camilla Askebäck Diaz (EXTERN)",
@@ -519,8 +517,8 @@ const PLAN_DATA = [
       },
       {
         "task": "Satelliten: Martin Sörensson (EXTERN, enda pass)",
-        "who": "Maria Nyström möter utanför Satelliten",
-        "note": "Maria Nyström inleder (1 min)"
+        "who": "Jonas Westholm möter utanför Satelliten",
+        "note": "Jonas Westholm inleder (1 min)"
       },
       {
         "task": "Spegelsalen: Gärdesskolan (intern)",
@@ -597,7 +595,7 @@ const PLAN_DATA = [
     "tasks": [
       {
         "task": "🌸 Martin Sörensson – Satelliten",
-        "who": "Maria Nyström",
+        "who": "Jonas Westholm",
         "flower": true
       },
       {
@@ -677,20 +675,7 @@ const PLAN_DATA = [
   }
 ];
 
-const SUPPLIERS = [
-  { name: "Binogi",            bord: "1 bord, 2 stolar",                          ovrigt: "El" },
-  { name: "Trelson",           bord: "1 bord, 2 stolar",                          ovrigt: "El" },
-  { name: "Hands on Science",  bord: "1 bord, 1 stol",                            ovrigt: "El" },
-  { name: "Skolon",            bord: "Inga bord/stolar – har egen monter",        ovrigt: "El" },
-  { name: "ILT",               bord: "2 bord + 1 runt högt bord",                 ovrigt: "El" },
-  { name: "Everway",           bord: "1 bord, 1 stol + 'självgående bord' vid aktiviteter", ovrigt: "El" },
-  { name: "NE",                bord: "1 lägre stort bord + 1 mindre högt bord",   ovrigt: "El" },
-  { name: "Jamf",              bord: "1 bord, 2 stolar",                          ovrigt: "El" },
-  { name: "Infomentor",        bord: "Inga bord/stolar – har egen monter",        ovrigt: "El" },
-  { name: "Internetstiftelsen",bord: "'Självgående bord'",                    ovrigt: "El?" },
-  { name: "Magma",             bord: "1–2 ståbord",                               ovrigt: "El" },
-  { name: "ATEA",              bord: "–",                                          ovrigt: "–" },
-];
+const SUPPLIERS = [{"name": "Binogi", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Trelson", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Hands on Science", "bord": "1 bord, 1 stol", "ovrigt": "El"}, {"name": "Skolon", "bord": "Inga bord/stolar – har egen monter", "ovrigt": "El"}, {"name": "ILT", "bord": "2 bord + 1 runt högt bord", "ovrigt": "El"}, {"name": "Everway", "bord": "1 bord, 1 stol + självgående bord vid aktiviteter", "ovrigt": "El"}, {"name": "NE", "bord": "1 lägre stort bord + 1 mindre högt bord", "ovrigt": "El"}, {"name": "Jamf", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Infomentor", "bord": "Inga bord/stolar – har egen monter", "ovrigt": "El"}, {"name": "Internetstiftelsen", "bord": "Självgående bord", "ovrigt": "El?"}, {"name": "Magma", "bord": "1–2 ståbord", "ovrigt": "El"}, {"name": "ATEA", "bord": "–", "ovrigt": "–"}];
 
 const INSTRUCTIONS = {
   meetSpeaker: [
@@ -713,7 +698,6 @@ const INSTRUCTIONS = {
   fikaStaff: ["David", "Kathi", "Agneta Bodin (till 14:00)", "Sandra Bagge (till 14:00)", "Ylva Färstedt (EM)"],
 };
 
-// ─── COLOUR MAP ──────────────────────────────────────────────────────────────
 const TYPE_STYLE = {
   prep:      { border: "border-amber-300",  bg: "bg-amber-50",  badge: "bg-amber-200 text-amber-900" },
   main:      { border: "border-sky-200",    bg: "bg-sky-50",    badge: "bg-sky-200 text-sky-900" },
@@ -725,7 +709,6 @@ const TYPE_STYLE = {
   lunch:     { border: "border-orange-200", bg: "bg-orange-50", badge: "bg-orange-200 text-orange-900" },
 };
 
-// ─── TASK ROW ─────────────────────────────────────────────────────────────────
 function TaskRow({ task }) {
   const rowBg = task.flower ? "bg-purple-100/70 border-purple-200" : "bg-white/80 border-slate-100";
   return (
@@ -740,15 +723,12 @@ function TaskRow({ task }) {
   );
 }
 
-// ─── TIME BLOCK ───────────────────────────────────────────────────────────────
 function TimeBlock({ block, searchQuery }) {
   const style = TYPE_STYLE[block.type] || TYPE_STYLE.break;
   const q = searchQuery ? searchQuery.toLowerCase() : "";
-  const visibleTasks = !q
-    ? block.tasks
-    : block.tasks.filter(t =>
-        [t.task, t.who || "", t.note || ""].some(s => s.toLowerCase().includes(q))
-      );
+  const visibleTasks = !q ? block.tasks : block.tasks.filter(t =>
+    [t.task, t.who || "", t.note || ""].some(s => s.toLowerCase().includes(q))
+  );
   const blockMatches = q && [block.label, block.time].some(s => s.toLowerCase().includes(q));
   const tasksToShow = blockMatches ? block.tasks : visibleTasks;
   if (q && tasksToShow.length === 0) return null;
@@ -765,16 +745,13 @@ function TimeBlock({ block, searchQuery }) {
   );
 }
 
-// ─── TABS ─────────────────────────────────────────────────────────────────────
 function TabTimeline({ searchQuery, setSearchQuery }) {
   return (
     <div className="space-y-2">
       <input
         placeholder="🔍 Sök person, sal eller uppgift..."
         className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-        type="text"
-        value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
+        type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
       />
       {PLAN_DATA.map((block, i) => <TimeBlock key={i} block={block} searchQuery={searchQuery} />)}
     </div>
@@ -807,25 +784,19 @@ function TabInstructions() {
         </div>
       </div>
       <div className="rounded-lg border border-amber-200 bg-amber-50 overflow-hidden">
-        <div className="px-3 py-2 bg-amber-500 text-white"><h2 className="font-bold text-sm">⚡ Flytande personal – korta uppdrag</h2></div>
-        <div className="px-3 py-3">
-          <p className="text-xs text-slate-600 mb-2">Dessa kan petas in på korta uppdrag:</p>
-          <div className="flex flex-wrap gap-2">
-            {INSTRUCTIONS.floatingStaff.map((name, i) => (
-              <span key={i} className="px-2 py-1 bg-amber-200 text-amber-900 rounded text-xs font-medium">{name}</span>
-            ))}
-          </div>
+        <div className="px-3 py-2 bg-amber-500 text-white"><h2 className="font-bold text-sm">⚡ Flytande personal</h2></div>
+        <div className="px-3 py-3 flex flex-wrap gap-2">
+          {INSTRUCTIONS.floatingStaff.map((name, i) => (
+            <span key={i} className="px-2 py-1 bg-amber-200 text-amber-900 rounded text-xs font-medium">{name}</span>
+          ))}
         </div>
       </div>
       <div className="rounded-lg border border-orange-200 bg-orange-50 overflow-hidden">
         <div className="px-3 py-2 bg-orange-500 text-white"><h2 className="font-bold text-sm">☕ Fikagruppen</h2></div>
-        <div className="px-3 py-3">
-          <p className="text-xs text-slate-600 mb-2">Kan hjälpa till på annat när det inte är fika:</p>
-          <div className="flex flex-wrap gap-2">
-            {INSTRUCTIONS.fikaStaff.map((name, i) => (
-              <span key={i} className="px-2 py-1 bg-orange-200 text-orange-900 rounded text-xs font-medium">{name}</span>
-            ))}
-          </div>
+        <div className="px-3 py-3 flex flex-wrap gap-2">
+          {INSTRUCTIONS.fikaStaff.map((name, i) => (
+            <span key={i} className="px-2 py-1 bg-orange-200 text-orange-900 rounded text-xs font-medium">{name}</span>
+          ))}
         </div>
       </div>
     </div>
@@ -939,7 +910,7 @@ function TabMoblering() {
         </div>
       </div>
       <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-        <div className="px-4 py-3 bg-slate-700 text-white"><h2 className="font-bold text-sm">🏪 Leverantörer – önskemål bord & övrigt</h2></div>
+        <div className="px-4 py-3 bg-slate-700 text-white"><h2 className="font-bold text-sm">🏪 Leverantörer – önskemål bord och övrigt</h2></div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead><tr className="bg-slate-100 text-slate-600 text-left">
@@ -967,13 +938,18 @@ function TabInfo() {
   return (
     <div className="space-y-4 max-w-2xl">
       <div className="rounded-lg border border-purple-200 bg-purple-50 overflow-hidden">
-        <div className="px-4 py-3 bg-purple-600 text-white"><h2 className="font-bold text-sm">🌸 Blommor och brickor</h2></div>
+        <div className="px-4 py-3 bg-purple-600 text-white">
+          <h2 className="font-bold text-sm">🌸 Blommor och brickor</h2>
+        </div>
         <div className="px-4 py-4 space-y-4 text-sm text-slate-700">
+
           <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
-            <div className="font-bold text-slate-800 flex items-center gap-2"><span className="text-lg">🏢</span> Turebergshuset</div>
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">🏢</span> Turebergshuset
+            </div>
             <p>Alla blomsterbuketter som ska delas ut i <strong>Turebergshuset</strong> finns på <strong>Makerzone</strong> i det lilla grupprummet.</p>
             <p>Där finns också alla <strong>brickor</strong> som ska delas ut.</p>
-            <div style="margin-top:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px;font-size:11px;color:#475569">
+            <div className="mt-2 rounded bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-700">
               <strong>🌸 Sollentunasalen:</strong> Blommor till talare i Sollentunasalen står i Sollentunasalen längst fram vid podiet.
             </div>
             <div className="mt-3 rounded bg-purple-50 border border-purple-200 px-3 py-2 text-xs space-y-1">
@@ -981,28 +957,33 @@ function TabInfo() {
               <div className="flex items-center gap-2"><span>🏆</span><span><strong>Interna föreläsare</strong> får en bricka</span></div>
             </div>
           </div>
+
           <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
-            <div className="font-bold text-slate-800 flex items-center gap-2"><span className="text-lg">🎤</span> Sollentunasalen</div>
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">🎤</span> Sollentunasalen
+            </div>
             <p>Blommor och bricka till talare i <strong>Sollentunasalen</strong> står i <strong>Sollentunasalen längst fram vid podiet</strong>.</p>
           </div>
+
           <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-2">
-            <div className="font-bold text-slate-800 flex items-center gap-2"><span className="text-lg">📡</span> Satelliten</div>
+            <div className="font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-lg">📡</span> Satelliten
+            </div>
             <p>Blommor och brickor som ska delas ut i <strong>Satelliten</strong> står i <strong>VIP-rummet</strong>.</p>
             <div className="mt-2 inline-flex items-center gap-2 bg-amber-100 border border-amber-300 rounded px-3 py-1.5 text-sm font-bold text-amber-800">
               <span>🔑</span> Kod: 2122
             </div>
           </div>
+
         </div>
       </div>
     </div>
   );
 }
 
-// ─── APP ──────────────────────────────────────────────────────────────────────
 function App() {
   const [tab, setTab] = useState("timeline");
   const [searchValue, setSearchValue] = useState("");
-
   const TABS = [
     { id: "timeline",     label: "Tidslinje" },
     { id: "instructions", label: "Möta föreläsare" },
@@ -1010,7 +991,6 @@ function App() {
     { id: "moblering",    label: "Möblering utställare" },
     { id: "info",         label: "Information" },
   ];
-
   return (
     <div className="min-h-screen bg-slate-50" style={{fontFamily:'"Segoe UI", system-ui, sans-serif'}}>
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
