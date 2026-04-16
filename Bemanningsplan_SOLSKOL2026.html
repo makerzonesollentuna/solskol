@@ -3,39 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOLSKOL 2026 – Bemanningsplan v3</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+<title>SOLSKOL 2026 – Bemanningsplan</title>
 <style>
-body{margin:0;font-family:"Segoe UI",system-ui,sans-serif}
-.tab-btn{padding:4px 12px;border-radius:4px 4px 0 0;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#94a3b8;white-space:nowrap}
-.tab-btn.active{background:#1d4ed8;color:#fff}
-.search-box{width:100%;padding:8px 12px;border-radius:8px;background:white;border:1px solid #e2e8f0;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:#f8fafc;color:#1e293b}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);border-bottom:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.06);padding:10px 16px}
+h1{font-size:18px;font-weight:700}
+.subtitle{font-size:12px;color:#94a3b8;margin-top:2px}
+.tabs{display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
+.tab{padding:5px 14px;border-radius:6px 6px 0 0;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#94a3b8;white-space:nowrap}
+.tab.active{background:#1d4ed8;color:#fff}
+main{max-width:1024px;margin:0 auto;padding:14px 12px 80px}
+#search{width:100%;padding:9px 14px;border-radius:8px;border:1px solid #e2e8f0;font-size:14px;outline:none;margin-bottom:10px;background:white}
 .block{border-radius:8px;overflow:hidden;margin-bottom:8px}
-.block-header{padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
-.block-label{font-size:14px;font-weight:600;color:#334155}
-.task{border-radius:6px;padding:8px;font-size:12px;margin-bottom:4px}
-.task-title{font-weight:600;color:#1e293b;margin-bottom:2px}
-.task-who{color:#1d4ed8}
-.task-note{color:#94a3b8;font-style:italic}
-.task-time{color:#64748b}
-.card{border-radius:8px;border:1px solid #e2e8f0;background:white;padding:16px;margin-bottom:12px}
-.card-title{font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.pill{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:500;display:inline-block;margin:2px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{padding:8px 12px;background:#f1f5f9;color:#64748b;text-align:left;font-weight:600}
-td{padding:8px 12px}
+.block-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px}
+.badge{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.block-label{font-size:13px;font-weight:600;color:#334155}
+.tasks{padding:0 10px 8px}
+.task{border-radius:6px;padding:8px 10px;font-size:12px;margin-top:5px}
+.task-title{font-weight:600;margin-bottom:2px}
+.task-who{color:#2563eb;margin-bottom:2px}
+.task-meta{color:#94a3b8;font-style:italic;font-size:11px}
+.card{border:1px solid #e2e8f0;border-radius:8px;background:white;padding:16px;margin-bottom:12px}
+.card-h{font-weight:700;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.info-note{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px;font-size:13px;color:#475569;margin-top:8px}
+.code-box{display:inline-flex;align-items:center;gap:8px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:8px 14px;font-size:14px;font-weight:700;color:#92400e;margin-top:10px}
+.pill-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px}
+.pill{padding:4px 10px;border-radius:6px;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:9px 12px;background:#f1f5f9;color:#64748b;text-align:left;font-weight:600}
+td{padding:9px 12px;border-top:1px solid #f1f5f9}
 tr:nth-child(even) td{background:#f8fafc}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.section-head{border-radius:8px 8px 0 0;padding:10px 14px}
+.section-head h2{color:white;font-weight:700;font-size:14px}
+.purple-box{border:1px solid #d8b4fe;border-radius:8px;background:#faf5ff;overflow:hidden;margin-bottom:12px}
+.purple-inner{padding:16px;display:flex;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script>
-const e = React.createElement;
-const useState = React.useState;
 
+<header>
+  <h1>SOLSKOL 2026 — Bemanningsplan</h1>
+  <div class="subtitle">Sök på namn för att hitta en persons uppdrag</div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('timeline',this)">Tidslinje</button>
+    <button class="tab" onclick="showTab('instructions',this)">Möta föreläsare</button>
+    <button class="tab" onclick="showTab('personal',this)">Personal</button>
+    <button class="tab" onclick="showTab('moblering',this)">Möblering utställare</button>
+    <button class="tab" onclick="showTab('info',this)">Information</button>
+  </div>
+</header>
+
+<main>
+
+<!-- TIDSLINJE -->
+<div id="tab-timeline" class="tab-content active">
+  <input id="search" type="text" placeholder="🔍 Sök person, sal eller uppgift..." oninput="filterTasks(this.value)">
+  <div id="timeline-blocks"></div>
+</div>
+
+<!-- MÖTA FÖRELÄSARE -->
+<div id="tab-instructions" class="tab-content">
+  <div class="block" style="border:1px solid #6ee7b7;background:#f0fdf4;overflow:hidden;margin-bottom:12px">
+    <div class="section-head" style="background:#059669"><h2>📋 Instruktioner – Möta föreläsare</h2></div>
+    <ol style="padding:14px 16px 14px 28px">
+      <li style="margin-bottom:8px;font-size:14px;color:#334155">Var på plats SENAST 15 min före passets start utanför rätt sal.</li>
+      <li style="margin-bottom:8px;font-size:14px;color:#334155">Välkomna föreläsaren, presentera dig, fråga om hen behöver något.</li>
+      <li style="margin-bottom:8px;font-size:14px;color:#334155">Visa toaletter och säg att det finns vatten i rummet.</li>
+      <li style="margin-bottom:8px;font-size:14px;color:#334155">Informera om tiden: "Du har 45 min, viktigt att inte dra över tiden."</li>
+      <li style="margin-bottom:8px;font-size:14px;color:#334155">PÅMINN om PA/mikrofon i: Scandic, Sollentunasalen, Satelliten, Järvafältet.</li>
+      <li style="font-size:14px;color:#334155">Informera om att någon kommer att komma EFTER passet för att tacka.</li>
+    </ol>
+  </div>
+  <div class="block" style="border:1px solid #bae6fd;background:#f0f9ff;overflow:hidden;margin-bottom:12px">
+    <div class="section-head" style="background:#2563eb"><h2>🔄 Föreläsare med två pass – blommor efter SISTA passet</h2></div>
+    <div id="two-pass-speakers" style="padding:10px 12px;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+  <div class="block" style="border:1px solid #fcd34d;background:#fffbeb;overflow:hidden;margin-bottom:12px">
+    <div class="section-head" style="background:#f59e0b"><h2>⚡ Flytande personal</h2></div>
+    <div class="pill-wrap" id="floating-staff"></div>
+  </div>
+  <div class="block" style="border:1px solid #fed7aa;background:#fff7ed;overflow:hidden">
+    <div class="section-head" style="background:#f97316"><h2>☕ Fikagruppen</h2></div>
+    <div class="pill-wrap" id="fika-staff"></div>
+  </div>
+</div>
+
+<!-- PERSONAL -->
+<div id="tab-personal" class="tab-content">
+  <div id="personal-groups"></div>
+</div>
+
+<!-- MÖBLERING -->
+<div id="tab-moblering" class="tab-content">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h">Skiss utställningssyta utanför Sollentunasalen</div>
+    <div style="overflow-x:auto">
+      <svg viewBox="0 0 1560 490" style="min-width:900px;width:100%;font-family:sans-serif">
+        <rect x="90" y="0" width="860" height="22" fill="#e8c000"/>
+        <text x="520" y="15" text-anchor="middle" font-size="12" font-weight="bold">24m</text>
+        <rect x="988" y="0" width="484" height="22" fill="#e8c000"/>
+        <text x="1230" y="15" text-anchor="middle" font-size="12" font-weight="bold">6m</text>
+        <rect x="0" y="22" width="88" height="444" fill="#90c8e0"/>
+        <text transform="translate(44,264) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold">3m</text>
+        <rect x="1516" y="246" width="44" height="220" fill="#e8c000"/>
+        <text transform="translate(1538,356) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold">3m</text>
+        <rect x="88" y="22" width="1428" height="408" fill="#e4e4e4" stroke="#aaa" stroke-width="1"/>
+        <rect x="1268" y="22" width="248" height="162" fill="#8c8c8c"/>
+        <text x="1392" y="44" text-anchor="middle" font-size="11" font-weight="bold" fill="white" letter-spacing="3">I N G Å N G</text>
+        <rect x="88" y="22" width="60" height="22" fill="#cc0000"/>
+        <text x="118" y="37" text-anchor="middle" font-size="9" font-weight="bold" fill="white">NÖDUTG.</text>
+        <rect x="180" y="74" width="128" height="124" fill="#f07800" rx="2"/>
+        <text x="244" y="140" text-anchor="middle" font-size="16" font-weight="bold" fill="white">JAMF</text>
+        <rect x="332" y="74" width="112" height="124" fill="#f07800" rx="2"/>
+        <text x="388" y="133" text-anchor="middle" font-size="15" font-weight="bold" fill="white">HoS</text>
+        <rect x="466" y="74" width="96" height="124" fill="#f07800" rx="2"/>
+        <text x="514" y="133" text-anchor="middle" font-size="12" font-weight="bold" fill="white">SKOLON</text>
+        <rect x="596" y="74" width="104" height="124" fill="#f07800" rx="2"/>
+        <text x="648" y="133" text-anchor="middle" font-size="11" font-weight="bold" fill="white">INFOMENTOR</text>
+        <rect x="730" y="74" width="124" height="124" fill="#f07800" rx="2"/>
+        <text x="792" y="140" text-anchor="middle" font-size="22" font-weight="bold" fill="white">ILT</text>
+        <rect x="876" y="74" width="112" height="124" fill="#f07800" rx="2"/>
+        <text x="932" y="140" text-anchor="middle" font-size="15" font-weight="bold" fill="white">MAGMA</text>
+        <rect x="1088" y="74" width="152" height="124" fill="#f07800" rx="2"/>
+        <text x="1164" y="140" text-anchor="middle" font-size="26" font-weight="bold" fill="white">NE</text>
+        <rect x="1012" y="74" width="50" height="124" fill="#2a8820"/>
+        <text x="1037" y="92" text-anchor="middle" font-size="9" font-weight="bold" fill="white">B</text>
+        <text x="1037" y="105" text-anchor="middle" font-size="9" font-weight="bold" fill="white">L</text>
+        <text x="1037" y="118" text-anchor="middle" font-size="9" font-weight="bold" fill="white">O</text>
+        <text x="1037" y="131" text-anchor="middle" font-size="9" font-weight="bold" fill="white">M</text>
+        <text x="1037" y="144" text-anchor="middle" font-size="9" font-weight="bold" fill="white">M</text>
+        <text x="1037" y="157" text-anchor="middle" font-size="9" font-weight="bold" fill="white">O</text>
+        <text x="1037" y="170" text-anchor="middle" font-size="9" font-weight="bold" fill="white">R</text>
+        <rect x="88" y="228" width="148" height="68" fill="#f07800" rx="2"/>
+        <text x="162" y="265" text-anchor="middle" font-size="9" font-weight="bold" fill="white">INTERNETSTIFTELSEN</text>
+        <rect x="244" y="228" width="96" height="68" fill="#f07800" rx="2"/>
+        <text x="292" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="white">EVERWAY</text>
+        <rect x="364" y="228" width="80" height="68" fill="#f07800" rx="2"/>
+        <text x="404" y="265" text-anchor="middle" font-size="13" font-weight="bold" fill="white">ATEA</text>
+        <rect x="580" y="210" width="370" height="48" fill="#c8a000"/>
+        <text x="765" y="239" text-anchor="middle" font-size="13" font-weight="bold" fill="white" letter-spacing="4">L Å N G B O R D</text>
+        <rect x="570" y="328" width="150" height="72" fill="#f07800" rx="2"/>
+        <text x="645" y="367" text-anchor="middle" font-size="16" font-weight="bold" fill="white">TRELSON</text>
+        <rect x="742" y="328" width="140" height="72" fill="#f07800" rx="2"/>
+        <text x="812" y="367" text-anchor="middle" font-size="16" font-weight="bold" fill="white">BINOGI</text>
+        <rect x="1020" y="406" width="348" height="22" fill="#f08080"/>
+        <text x="1194" y="421" text-anchor="middle" font-size="10" font-weight="bold" letter-spacing="3">R E C E P T I O N</text>
+        <rect x="1368" y="406" width="148" height="22" fill="#333"/>
+        <text x="1442" y="421" text-anchor="middle" font-size="8" font-weight="bold" fill="white">TRAPPHUS/SPEEDGATE</text>
+        <rect x="88" y="428" width="64" height="22" fill="white" stroke="#888" stroke-width="1"/>
+        <text x="120" y="443" text-anchor="middle" font-size="10">WC</text>
+        <rect x="200" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="224" y="443" text-anchor="middle" font-size="11" font-weight="bold">S</text>
+        <rect x="248" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="272" y="443" text-anchor="middle" font-size="11" font-weight="bold">O</text>
+        <rect x="296" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="320" y="443" text-anchor="middle" font-size="11" font-weight="bold">L</text>
+        <rect x="344" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="368" y="443" text-anchor="middle" font-size="11" font-weight="bold">L</text>
+        <rect x="392" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="416" y="443" text-anchor="middle" font-size="11" font-weight="bold">E</text>
+        <rect x="440" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="464" y="443" text-anchor="middle" font-size="11" font-weight="bold">N</text>
+        <rect x="488" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="512" y="443" text-anchor="middle" font-size="11" font-weight="bold">T</text>
+        <rect x="536" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="560" y="443" text-anchor="middle" font-size="11" font-weight="bold">U</text>
+        <rect x="584" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="608" y="443" text-anchor="middle" font-size="11" font-weight="bold">N</text>
+        <rect x="632" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="656" y="443" text-anchor="middle" font-size="11" font-weight="bold">A</text>
+        <rect x="680" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="704" y="443" text-anchor="middle" font-size="11" font-weight="bold">S</text>
+        <rect x="728" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="752" y="443" text-anchor="middle" font-size="11" font-weight="bold">A</text>
+        <rect x="776" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="800" y="443" text-anchor="middle" font-size="11" font-weight="bold">L</text>
+        <rect x="824" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="848" y="443" text-anchor="middle" font-size="11" font-weight="bold">E</text>
+        <rect x="872" y="428" width="48" height="22" fill="#e8c000" stroke="#ccc" stroke-width="0.5"/><text x="896" y="443" text-anchor="middle" font-size="11" font-weight="bold">N</text>
+      </svg>
+    </div>
+  </div>
+  <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+    <div class="section-head" style="background:#334155"><h2>🏪 Leverantörer – önskemål bord och övrigt</h2></div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Leverantör</th><th>Önskemål bord</th><th>Övrigt</th></tr></thead>
+        <tbody id="suppliers-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- INFORMATION -->
+<div id="tab-info" class="tab-content">
+  <div class="purple-box">
+    <div class="section-head" style="background:#7c3aed"><h2>🌸 Blommor och brickor</h2></div>
+    <div class="purple-inner">
+      <div class="card">
+        <div class="card-h"><span style="font-size:18px">🏢</span> Turebergshuset</div>
+        <p style="font-size:14px;color:#334155;margin-bottom:8px">Alla blomsterbuketter som ska delas ut i <strong>Turebergshuset</strong> finns på <strong>Makerzone</strong> i det lilla grupprummet. Där finns också alla <strong>brickor</strong> som ska delas ut.</p>
+        <div class="info-note"><strong>🌸 Sollentunasalen:</strong> Blommor till talare i Sollentunasalen står längst fram vid podiet.</div>
+        <div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:6px;padding:10px;font-size:13px;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">🌸 <span><strong>Externa föreläsare</strong> får blommor + bricka</span></div>
+          <div style="display:flex;align-items:center;gap:8px">🏆 <span><strong>Interna föreläsare</strong> får en bricka</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span style="font-size:18px">🎤</span> Sollentunasalen</div>
+        <p style="font-size:14px;color:#334155">Blommor och bricka till talare i <strong>Sollentunasalen</strong> står längst fram vid <strong>podiet</strong>.</p>
+      </div>
+      <div class="card">
+        <div class="card-h"><span style="font-size:18px">📡</span> Satelliten</div>
+        <p style="font-size:14px;color:#334155;margin-bottom:10px">Blommor och brickor som ska delas ut i <strong>Satelliten</strong> står i <strong>VIP-rummet</strong>.</p>
+        <div class="code-box">🔑 Kod: 2122</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
 const PLAN_DATA = [
   {
     "time": "08:00–08:20",
@@ -691,384 +869,127 @@ const PLAN_DATA = [
     ]
   }
 ];
+const SUPPLIERS = [{"name": "Binogi", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Trelson", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Hands on Science", "bord": "1 bord, 1 stol", "ovrigt": "El"}, {"name": "Skolon", "bord": "Inga bord/stolar – har egen monter", "ovrigt": "El"}, {"name": "ILT", "bord": "2 bord + 1 runt högt bord", "ovrigt": "El"}, {"name": "Everway", "bord": "1 bord, 1 stol + självgående bord vid aktiviteter", "ovrigt": "El"}, {"name": "NE", "bord": "1 lägre stort bord + 1 mindre högt bord", "ovrigt": "El"}, {"name": "Jamf", "bord": "1 bord, 2 stolar", "ovrigt": "El"}, {"name": "Infomentor", "bord": "Inga bord/stolar – har eigen monter", "ovrigt": "El"}, {"name": "Internetstiftelsen", "bord": "Självgående bord", "ovrigt": "El?"}, {"name": "Magma", "bord": "1–2 ståbord", "ovrigt": "El"}, {"name": "ATEA", "bord": "2 ståbord, 1 hurtsch, 1 stol", "ovrigt": "El"}];
 
-const SUPPLIERS = [
-  {
-    "name": "Binogi",
-    "bord": "1 bord, 2 stolar",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Trelson",
-    "bord": "1 bord, 2 stolar",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Hands on Science",
-    "bord": "1 bord, 1 stol",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Skolon",
-    "bord": "Inga bord/stolar – har egen monter",
-    "ovrigt": "El"
-  },
-  {
-    "name": "ILT",
-    "bord": "2 bord + 1 runt högt bord",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Everway",
-    "bord": "1 bord, 1 stol + självgående bord vid aktiviteter",
-    "ovrigt": "El"
-  },
-  {
-    "name": "NE",
-    "bord": "1 lägre stort bord + 1 mindre högt bord",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Jamf",
-    "bord": "1 bord, 2 stolar",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Infomentor",
-    "bord": "Inga bord/stolar – har egen monter",
-    "ovrigt": "El"
-  },
-  {
-    "name": "Internetstiftelsen",
-    "bord": "Självgående bord",
-    "ovrigt": "El?"
-  },
-  {
-    "name": "Magma",
-    "bord": "1–2 ståbord",
-    "ovrigt": "El"
-  },
-  {
-    "name": "ATEA",
-    "bord": "2 ståbord, 1 hurtsch, 1 stol",
-    "ovrigt": "El"
-  }
-];
-
-const INSTRUCTIONS = {
-  meetSpeaker: [
-    "Var på plats SENAST 15 min före passets start utanför rätt sal.",
-    "Välkomna föreläsaren, presentera dig, fråga om hen behöver något.",
-    "Visa toaletter och säg att det finns vatten i rummet.",
-    'Informera om tiden: "Du har 45 min, viktigt att inte dra över tiden."',
-    "PÅMINN om PA/mikrofon i: Scandic, Sollentunasalen, Satelliten, Järvafältet.",
-    "Informera om att någon kommer att komma EFTER passet för att tacka.",
-  ],
-  twoPassSpeakers: [
-    { name: "Patricia Diaz", passes: "Pass 1 (Sollentunasalen) + Pass 3 (Satelliten)", flowers: "efter pass 3" },
-    { name: "Anne Marie Körling", passes: "Pass 1 (Satelliten) + Pass 2 (Järvafältet)", flowers: "efter pass 2" },
-    { name: "Camilla Askebäck Diaz", passes: "Pass 1 (Spegelsalen) + Pass 2 (Sollentunasalen)", flowers: "efter pass 2" },
-    { name: "Helen Larsson", passes: "Pass 2 (Spegelsalen) + Pass 3 (Spegelsalen)", flowers: "efter pass 3" },
-    { name: "Kristina Alexandersson", passes: "Pass 1–2 (Makerzone)", flowers: "EJ blommor" },
-    { name: "Richard Duncan", passes: "Pass 3–4 (Viby P3)", flowers: "bricka (leverantör)" },
-  ],
-  floatingStaff: ["Lisa Eriksson", "Anna Lena Ekstrand", "Ann Eriksson Johansson", "Ingmari Brockland"],
-  fikaStaff: ["David", "Kathi", "Agneta Bodin (till 14:00)", "Sandra Bagge (till 14:00)", "Ylva Färstedt (EM)"],
+const TYPE_COLORS = {
+  prep:      {bg:"#fffbeb",border:"#fcd34d",bbg:"#fde68a",bfg:"#78350f"},
+  main:      {bg:"#f0f9ff",border:"#bae6fd",bbg:"#bae6fd",bfg:"#0c4a6e"},
+  reception: {bg:"#fff1f2",border:"#fda4af",bbg:"#fecdd3",bfg:"#9f1239"},
+  keys:      {bg:"#ecfeff",border:"#67e8f9",bbg:"#cffafe",bfg:"#164e63"},
+  break:     {bg:"#fafaf9",border:"#d6d3d1",bbg:"#e7e5e4",bfg:"#44403c"},
+  session:   {bg:"#f0fdf4",border:"#6ee7b7",bbg:"#a7f3d0",bfg:"#064e3b"},
+  flower:    {bg:"#faf5ff",border:"#d8b4fe",bbg:"#e9d5ff",bfg:"#581c87"},
+  lunch:     {bg:"#fff7ed",border:"#fed7aa",bbg:"#fdba74",bfg:"#7c2d12"},
 };
 
-const TYPE_STYLE = {
-  prep:      { border:"#fcd34d", bg:"#fffbeb", badge:"background:#fde68a;color:#78350f" },
-  main:      { border:"#bae6fd", bg:"#f0f9ff", badge:"background:#bae6fd;color:#0c4a6e" },
-  reception: { border:"#fda4af", bg:"#fff1f2", badge:"background:#fecdd3;color:#9f1239" },
-  keys:      { border:"#67e8f9", bg:"#ecfeff", badge:"background:#cffafe;color:#164e63" },
-  break:     { border:"#d6d3d1", bg:"#fafaf9", badge:"background:#e7e5e4;color:#44403c" },
-  session:   { border:"#6ee7b7", bg:"#f0fdf4", badge:"background:#a7f3d0;color:#064e3b" },
-  flower:    { border:"#d8b4fe", bg:"#faf5ff", badge:"background:#e9d5ff;color:#581c87" },
-  lunch:     { border:"#fed7aa", bg:"#fff7ed", badge:"background:#fdba74;color:#7c2d12" },
-};
-
-function TaskRow({task}) {
-  const bg = task.flower ? "background:#f3e8ff;border:1px solid #d8b4fe" : "background:rgba(255,255,255,0.8);border:1px solid #f1f5f9";
-  return e("div", {className:"task", style:{cssText:bg}},
-    e("div", {className:"task-title"}, task.task),
-    task.who ? e("div", {className:"task-who"}, task.who) : null,
-    e("div", {style:{display:"flex",gap:"12px",flexWrap:"wrap",marginTop:"2px"}},
-      task.time ? e("span", {className:"task-time"}, task.time) : null,
-      task.note ? e("span", {className:"task-note"}, task.note) : null,
-    )
-  );
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id !== 'timeline') document.getElementById('search').value = '';
 }
 
-function TimeBlock({block, searchQuery}) {
-  const style = TYPE_STYLE[block.type] || TYPE_STYLE.break;
-  const q = searchQuery ? searchQuery.toLowerCase() : "";
-  const visibleTasks = !q ? block.tasks : block.tasks.filter(t =>
-    [t.task, t.who||"", t.note||""].some(s => s.toLowerCase().includes(q))
-  );
-  const blockMatches = q && [block.label, block.time].some(s => s.toLowerCase().includes(q));
-  const tasksToShow = blockMatches ? block.tasks : visibleTasks;
-  if (q && tasksToShow.length === 0) return null;
-  return e("div", {className:"block", style:{border:"1px solid "+style.border, background:style.bg}},
-    e("div", {className:"block-header"},
-      e("span", {className:"badge", style:{cssText:style.badge}}, block.time),
-      e("span", {className:"block-label"}, block.label)
-    ),
-    e("div", {style:{padding:"0 12px 8px"}},
-      tasksToShow.map((task, i) => e(TaskRow, {key:i, task}))
-    )
-  );
+function renderTask(task) {
+  const bg = task.flower ? 'background:#f3e8ff;border:1px solid #d8b4fe' : 'background:rgba(255,255,255,0.85);border:1px solid #f1f5f9';
+  let html = '<div class="task" style="' + bg + '">';
+  html += '<div class="task-title">' + task.task + '</div>';
+  if (task.who) html += '<div class="task-who">' + task.who + '</div>';
+  let meta = [];
+  if (task.time) meta.push('<span style="color:#64748b">' + task.time + '</span>');
+  if (task.note) meta.push('<span class="task-meta">' + task.note + '</span>');
+  if (meta.length) html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:3px">' + meta.join('') + '</div>';
+  html += '</div>';
+  return html;
 }
 
-function TabTimeline({searchQuery, setSearchQuery}) {
-  return e("div", null,
-    e("input", {className:"search-box", placeholder:"🔍 Sök person, sal eller uppgift...", value:searchQuery, onChange:ev=>setSearchQuery(ev.target.value)}),
-    PLAN_DATA.map((block, i) => e(TimeBlock, {key:i, block, searchQuery}))
-  );
+function renderBlocks(query) {
+  const q = query ? query.toLowerCase() : '';
+  let html = '';
+  PLAN_DATA.forEach(block => {
+    const c = TYPE_COLORS[block.type] || TYPE_COLORS.break;
+    const visibleTasks = !q ? block.tasks : block.tasks.filter(t =>
+      [t.task, t.who||'', t.note||''].some(s => s.toLowerCase().includes(q))
+    );
+    const blockMatches = q && [block.label, block.time].some(s => s.toLowerCase().includes(q));
+    const tasks = blockMatches ? block.tasks : visibleTasks;
+    if (q && tasks.length === 0) return;
+    html += '<div class="block" style="border:1px solid '+c.border+';background:'+c.bg+'">';
+    html += '<div class="block-head">';
+    html += '<span class="badge" style="background:'+c.bbg+';color:'+c.bfg+'">' + block.time + '</span>';
+    html += '<span class="block-label">' + block.label + '</span>';
+    html += '</div><div class="tasks">';
+    tasks.forEach(t => { html += renderTask(t); });
+    html += '</div></div>';
+  });
+  document.getElementById('timeline-blocks').innerHTML = html;
 }
 
-function TabInstructions() {
-  return e("div", {style:{display:"flex",flexDirection:"column",gap:"16px"}},
-    e("div", {className:"block", style:{border:"1px solid #6ee7b7", background:"#f0fdf4"}},
-      e("div", {className:"block-header", style:{background:"#059669"}},
-        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "📋 Instruktioner – Möta föreläsare")
-      ),
-      e("ol", {style:{padding:"12px 16px",margin:0}},
-        INSTRUCTIONS.meetSpeaker.map((line,i) =>
-          e("li", {key:i, style:{display:"flex",gap:"8px",fontSize:"14px",color:"#334155",marginBottom:"8px"}},
-            e("span", {style:{fontWeight:"700",color:"#059669",flexShrink:0}}, (i+1)+"."),
-            e("span", null, line)
-          )
-        )
-      )
-    ),
-    e("div", {className:"block", style:{border:"1px solid #bae6fd", background:"#f0f9ff"}},
-      e("div", {className:"block-header", style:{background:"#2563eb"}},
-        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "🔄 Föreläsare med två pass – blommor efter SISTA passet")
-      ),
-      e("div", {style:{padding:"8px 12px"}},
-        INSTRUCTIONS.twoPassSpeakers.map((s,i) =>
-          e("div", {key:i, style:{background:"rgba(255,255,255,0.8)",border:"1px solid #f1f5f9",borderRadius:"6px",padding:"8px",marginBottom:"6px",fontSize:"12px"}},
-            e("div", {style:{fontWeight:"600",color:"#1e293b"}}, s.name),
-            e("div", {style:{color:"#64748b"}}, s.passes),
-            e("div", {style:{color:"#7c3aed",fontWeight:"500"}}, "Blommor/bricka: "+s.flowers)
-          )
-        )
-      )
-    ),
-    e("div", {className:"block", style:{border:"1px solid #fcd34d", background:"#fffbeb"}},
-      e("div", {className:"block-header", style:{background:"#f59e0b"}},
-        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "⚡ Flytande personal")
-      ),
-      e("div", {style:{padding:"12px",display:"flex",flexWrap:"wrap",gap:"8px"}},
-        INSTRUCTIONS.floatingStaff.map((name,i) =>
-          e("span", {key:i, className:"pill", style:{background:"#fde68a",color:"#78350f"}}, name)
-        )
-      )
-    ),
-    e("div", {className:"block", style:{border:"1px solid #fed7aa", background:"#fff7ed"}},
-      e("div", {className:"block-header", style:{background:"#f97316"}},
-        e("span", {style:{color:"white",fontWeight:"700",fontSize:"14px"}}, "☕ Fikagruppen")
-      ),
-      e("div", {style:{padding:"12px",display:"flex",flexWrap:"wrap",gap:"8px"}},
-        INSTRUCTIONS.fikaStaff.map((name,i) =>
-          e("span", {key:i, className:"pill", style:{background:"#fed7aa",color:"#7c2d12"}}, name)
-        )
-      )
-    )
-  );
-}
+function filterTasks(q) { renderBlocks(q); }
 
-function TabPersonal() {
+// Build suppliers table
+(function() {
+  let html = '';
+  SUPPLIERS.forEach((s,i) => {
+    const bg = i%2===0 ? '' : 'background:#f8fafc';
+    html += '<tr style="'+bg+'"><td style="font-weight:600">'+s.name+'</td><td style="color:#475569">'+s.bord+'</td><td style="color:#64748b">'+s.ovrigt+'</td></tr>';
+  });
+  document.getElementById('suppliers-table').innerHTML = html;
+})();
+
+// Build two-pass speakers
+(function() {
+  const speakers = [
+    {name:"Patricia Diaz", passes:"Pass 1 (Sollentunasalen) + Pass 3 (Satelliten)", flowers:"efter pass 3"},
+    {name:"Anne Marie Körling", passes:"Pass 1 (Satelliten) + Pass 2 (Järvafältet)", flowers:"efter pass 2"},
+    {name:"Camilla Askebäck Diaz", passes:"Pass 1 (Spegelsalen) + Pass 2 (Sollentunasalen)", flowers:"efter pass 2"},
+    {name:"Helen Larsson", passes:"Pass 2 (Spegelsalen) + Pass 3 (Spegelsalen)", flowers:"efter pass 3"},
+    {name:"Kristina Alexandersson", passes:"Pass 1–2 (Makerzone)", flowers:"EJ blommor"},
+    {name:"Richard Duncan", passes:"Pass 3–4 (Viby P3)", flowers:"bricka (leverantör)"},
+  ];
+  let html = '';
+  speakers.forEach(s => {
+    html += '<div style="background:rgba(255,255,255,0.85);border:1px solid #f1f5f9;border-radius:6px;padding:8px;font-size:12px">';
+    html += '<div style="font-weight:600;color:#1e293b">'+s.name+'</div>';
+    html += '<div style="color:#64748b">'+s.passes+'</div>';
+    html += '<div style="color:#7c3aed;font-weight:500">Blommor/bricka: '+s.flowers+'</div>';
+    html += '</div>';
+  });
+  document.getElementById('two-pass-speakers').innerHTML = html;
+})();
+
+// Build floating/fika staff
+(function() {
+  const floating = ["Lisa Eriksson","Anna Lena Ekstrand","Ann Eriksson Johansson","Ingmari Brockland"];
+  const fika = ["David","Kathi","Agneta Bodin (till 14:00)","Sandra Bagge (till 14:00)","Ylva Färstedt (EM)"];
+  document.getElementById('floating-staff').innerHTML = floating.map(n => '<span class="pill" style="background:#fde68a;color:#78350f">'+n+'</span>').join('');
+  document.getElementById('fika-staff').innerHTML = fika.map(n => '<span class="pill" style="background:#fed7aa;color:#7c2d12">'+n+'</span>').join('');
+})();
+
+// Build personal groups
+(function() {
   const groups = {
     "08:00 – slutar efter lunch": ["Isabell Weber","Katarina Edwinsson","Maria Högberg (till 11:30, tillbaka pass 13:00)","Katja Lagerbäck","Åsa Börjesson","Maria Svedman","Frida Signevik","Barbara Lundgren","Lasse Sundberg","Moa Österberg","Martin Wallén"],
-    "Hela dagen – FM och EM": ["Ella Marjakangas","Johan Lundgren","Katarina Österberg (slutar 15:45)","Carina Baas (slutar 16:00)","Elin Larsson","Johan Hesselgren","Annette Karmitsa","Karin Hiller","Maria Nyström","Maria Nygårds","Erik Jaråker","Jonas","Jennie Flodin (borta 14:00–14:30)"],
+    "Hela dagen – FM och EM": ["Ella Marjakangas","Johan Lundgren","Katarina Österberg (slutar 15:45)","Carina Baas (slutar 16:00)","Elin Larsson","Johan Hesselgren","Annette Karmitsa","Karin Hiller","Maria Nyström","Maria Nygårds","Erik Jaråker","Jonas Westholm","Jennie Flodin (borta 14:00–14:30)"],
     "FM – begränsad tid": ["Kaisa Humlebo (ej 08:20–12:00, håller pass 14:00–15:00)","Stina SZ (ej 08:00–10:30, ej 15:50–16:45)"],
     "EM – börjar efter lunch": ["Frida ER","Anita Oliver","Anna Schiller","Soudabeh Bagheri","Ylva Färstedt"],
     "Fikagrupp": ["David","Kathi","Agneta Bodin (till 14:00)","Sandra Bagge (till 14:00)","Ylva Färstedt (EM)"],
     "Flytande / korta uppdrag": ["Lisa Eriksson","Anna Lena Ekstrand","Ann Eriksson Johansson","Ingmari Brockland"],
-    "Teknik": ["Göran (plan 3–5)","IT-support (Sollentunasalen)","Jonas (Satelliten)"],
+    "Teknik": ["Göran (plan 3–5)","IT-support (Sollentunasalen)","Jonas Westholm (Satelliten)"],
   };
-  return e("div", {style:{display:"flex",flexDirection:"column",gap:"12px"}},
-    Object.entries(groups).map(([group, names]) =>
-      e("div", {key:group, className:"block", style:{border:"1px solid #e2e8f0", background:"white"}},
-        e("div", {className:"block-header", style:{background:"#334155"}},
-          e("span", {style:{color:"white",fontWeight:"600",fontSize:"12px"}}, group)
-        ),
-        e("div", {style:{padding:"8px 12px",display:"flex",flexWrap:"wrap",gap:"6px"}},
-          names.map((name,i) =>
-            e("span", {key:i, className:"pill", style:{background:"#f1f5f9",color:"#475569"}}, name)
-          )
-        )
-      )
-    )
-  );
-}
+  let html = '';
+  Object.entries(groups).forEach(([g, names]) => {
+    html += '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:10px">';
+    html += '<div style="background:#334155;padding:8px 12px;color:white;font-weight:600;font-size:12px">'+g+'</div>';
+    html += '<div style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px">';
+    names.forEach(n => { html += '<span class="pill" style="background:#f1f5f9;color:#475569">'+n+'</span>'; });
+    html += '</div></div>';
+  });
+  document.getElementById('personal-groups').innerHTML = html;
+})();
 
-function TabMoblering() {
-  return e("div", {style:{display:"flex",flexDirection:"column",gap:"16px"}},
-    e("div", {style:{border:"1px solid #e2e8f0",borderRadius:"8px",background:"white",padding:"12px"}},
-      e("h2", {style:{fontWeight:"700",fontSize:"14px",color:"#334155",marginBottom:"12px"}}, "Skiss utställningssyta utanför Sollentunasalen"),
-      e("div", {style:{overflowX:"auto"}},
-        e("svg", {viewBox:"0 0 1560 490", style:{minWidth:"900px",width:"100%",fontFamily:"sans-serif"}},
-          e("rect",{x:"90",y:"0",width:"860",height:"22",fill:"#e8c000"}),
-          e("text",{x:"520",y:"15",textAnchor:"middle",fontSize:"12",fontWeight:"bold"},"24m"),
-          e("rect",{x:"988",y:"0",width:"484",height:"22",fill:"#e8c000"}),
-          e("text",{x:"1230",y:"15",textAnchor:"middle",fontSize:"12",fontWeight:"bold"},"6m"),
-          e("rect",{x:"0",y:"22",width:"88",height:"444",fill:"#90c8e0"}),
-          e("text",{transform:"translate(44,264) rotate(-90)",textAnchor:"middle",fontSize:"13",fontWeight:"bold"},"3m"),
-          e("rect",{x:"1516",y:"246",width:"44",height:"220",fill:"#e8c000"}),
-          e("text",{transform:"translate(1538,356) rotate(-90)",textAnchor:"middle",fontSize:"13",fontWeight:"bold"},"3m"),
-          e("rect",{x:"88",y:"22",width:"1428",height:"408",fill:"#e4e4e4",stroke:"#aaa",strokeWidth:"1"}),
-          e("rect",{x:"1268",y:"22",width:"248",height:"162",fill:"#8c8c8c"}),
-          e("text",{x:"1392",y:"44",textAnchor:"middle",fontSize:"11",fontWeight:"bold",fill:"white",letterSpacing:"3"},"I N G Å N G"),
-          e("rect",{x:"88",y:"22",width:"60",height:"22",fill:"#cc0000"}),
-          e("text",{x:"118",y:"37",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"NÖDUTG."),
-          e("rect",{x:"180",y:"74",width:"128",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"244",y:"140",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"JAMF"),
-          e("rect",{x:"332",y:"74",width:"112",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"388",y:"133",textAnchor:"middle",fontSize:"15",fontWeight:"bold",fill:"white"},"HoS"),
-          e("rect",{x:"466",y:"74",width:"96",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"514",y:"133",textAnchor:"middle",fontSize:"12",fontWeight:"bold",fill:"white"},"SKOLON"),
-          e("rect",{x:"596",y:"74",width:"104",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"648",y:"133",textAnchor:"middle",fontSize:"11",fontWeight:"bold",fill:"white"},"INFOMENTOR"),
-          e("rect",{x:"730",y:"74",width:"124",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"792",y:"140",textAnchor:"middle",fontSize:"22",fontWeight:"bold",fill:"white"},"ILT"),
-          e("rect",{x:"876",y:"74",width:"112",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"932",y:"140",textAnchor:"middle",fontSize:"15",fontWeight:"bold",fill:"white"},"MAGMA"),
-          e("rect",{x:"1088",y:"74",width:"152",height:"124",fill:"#f07800",rx:"2"}),
-          e("text",{x:"1164",y:"140",textAnchor:"middle",fontSize:"26",fontWeight:"bold",fill:"white"},"NE"),
-          e("rect",{x:"1012",y:"74",width:"50",height:"124",fill:"#2a8820"}),
-          e("text",{x:"1037",y:"92",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"B"),
-          e("text",{x:"1037",y:"105",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"L"),
-          e("text",{x:"1037",y:"118",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"O"),
-          e("text",{x:"1037",y:"131",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"M"),
-          e("text",{x:"1037",y:"144",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"M"),
-          e("text",{x:"1037",y:"157",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"O"),
-          e("text",{x:"1037",y:"170",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"R"),
-          e("rect",{x:"88",y:"228",width:"148",height:"68",fill:"#f07800",rx:"2"}),
-          e("text",{x:"162",y:"265",textAnchor:"middle",fontSize:"9",fontWeight:"bold",fill:"white"},"INTERNETSTIFTELSEN"),
-          e("rect",{x:"244",y:"228",width:"96",height:"68",fill:"#f07800",rx:"2"}),
-          e("text",{x:"292",y:"265",textAnchor:"middle",fontSize:"12",fontWeight:"bold",fill:"white"},"EVERWAY"),
-          e("rect",{x:"364",y:"228",width:"80",height:"68",fill:"#f07800",rx:"2"}),
-          e("text",{x:"404",y:"265",textAnchor:"middle",fontSize:"13",fontWeight:"bold",fill:"white"},"ATEA"),
-          e("rect",{x:"580",y:"210",width:"370",height:"48",fill:"#c8a000"}),
-          e("text",{x:"765",y:"239",textAnchor:"middle",fontSize:"13",fontWeight:"bold",fill:"white",letterSpacing:"4"},"L Å N G B O R D"),
-          e("rect",{x:"570",y:"328",width:"150",height:"72",fill:"#f07800",rx:"2"}),
-          e("text",{x:"645",y:"367",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"TRELSON"),
-          e("rect",{x:"742",y:"328",width:"140",height:"72",fill:"#f07800",rx:"2"}),
-          e("text",{x:"812",y:"367",textAnchor:"middle",fontSize:"16",fontWeight:"bold",fill:"white"},"BINOGI"),
-          e("rect",{x:"1020",y:"406",width:"348",height:"22",fill:"#f08080"}),
-          e("text",{x:"1194",y:"421",textAnchor:"middle",fontSize:"10",fontWeight:"bold",letterSpacing:"3"},"R E C E P T I O N"),
-          e("rect",{x:"1368",y:"406",width:"148",height:"22",fill:"#333"}),
-          e("text",{x:"1442",y:"421",textAnchor:"middle",fontSize:"8",fontWeight:"bold",fill:"white"},"TRAPPHUS/SPEEDGATE"),
-          e("rect",{x:"88",y:"428",width:"64",height:"22",fill:"white",stroke:"#888",strokeWidth:"1"}),
-          e("text",{x:"120",y:"443",textAnchor:"middle",fontSize:"10"},"WC"),
-          ..."SOLLENTUNASALEN".split("").map((letter,i) =>
-            e("g", {key:i},
-              e("rect",{x:200+i*48,y:428,width:48,height:22,fill:"#e8c000",stroke:"#ccc",strokeWidth:"0.5"}),
-              e("text",{x:224+i*48,y:443,textAnchor:"middle",fontSize:"11",fontWeight:"bold"},letter)
-            )
-          )
-        )
-      )
-    ),
-    e("div", {style:{border:"1px solid #e2e8f0",borderRadius:"8px",background:"white",overflow:"hidden"}},
-      e("div", {style:{padding:"12px 16px",background:"#334155"}},
-        e("h2", {style:{color:"white",fontWeight:"700",fontSize:"14px",margin:0}}, "🏪 Leverantörer – önskemål bord och övrigt")
-      ),
-      e("div", {style:{overflowX:"auto"}},
-        e("table", null,
-          e("thead", null, e("tr", null,
-            e("th", null, "Leverantör"),
-            e("th", null, "Önskemål bord"),
-            e("th", null, "Övrigt")
-          )),
-          e("tbody", null,
-            SUPPLIERS.map((s,i) => e("tr", {key:i},
-              e("td", {style:{fontWeight:"600"}}, s.name),
-              e("td", {style:{color:"#475569"}}, s.bord),
-              e("td", {style:{color:"#64748b"}}, s.ovrigt)
-            ))
-          )
-        )
-      )
-    )
-  );
-}
-
-function TabInfo() {
-  return e("div", {style:{maxWidth:"640px",display:"flex",flexDirection:"column",gap:"12px"}},
-    e("div", {style:{border:"1px solid #d8b4fe",borderRadius:"8px",background:"#faf5ff",overflow:"hidden"}},
-      e("div", {style:{padding:"12px 16px",background:"#7c3aed"}},
-        e("h2", {style:{color:"white",fontWeight:"700",fontSize:"14px",margin:0}}, "🌸 Blommor och brickor")
-      ),
-      e("div", {style:{padding:"16px",display:"flex",flexDirection:"column",gap:"12px"}},
-        e("div", {className:"card"},
-          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"🏢"), " Turebergshuset"),
-          e("p", {style:{margin:"0 0 8px",fontSize:"14px",color:"#334155"}}, "Alla blomsterbuketter som ska delas ut i Turebergshuset finns på ", e("strong",null,"Makerzone"), " i det lilla grupprummet. Där finns också alla ", e("strong",null,"brickor"), " som ska delas ut."),
-          e("div", {style:{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:"6px",padding:"8px",fontSize:"12px",color:"#475569",marginBottom:"8px"}},
-            e("strong",null,"🌸 Sollentunasalen:"), " Blommor till talare i Sollentunasalen står längst fram vid podiet."
-          ),
-          e("div", {style:{background:"#faf5ff",border:"1px solid #e9d5ff",borderRadius:"6px",padding:"8px",fontSize:"12px"}},
-            e("div", {style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}, e("span",null,"🌸"), e("span",null,e("strong",null,"Externa föreläsare"), " får blommor + bricka")),
-            e("div", {style:{display:"flex",alignItems:"center",gap:"8px"}}, e("span",null,"🏆"), e("span",null,e("strong",null,"Interna föreläsare"), " får en bricka"))
-          )
-        ),
-        e("div", {className:"card"},
-          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"🎤"), " Sollentunasalen"),
-          e("p", {style:{margin:0,fontSize:"14px",color:"#334155"}}, "Blommor och bricka till talare i ", e("strong",null,"Sollentunasalen"), " står längst fram vid ", e("strong",null,"podiet"), ".")
-        ),
-        e("div", {className:"card"},
-          e("div", {className:"card-title"}, e("span",{style:{fontSize:"18px"}},"📡"), " Satelliten"),
-          e("p", {style:{margin:"0 0 8px",fontSize:"14px",color:"#334155"}}, "Blommor och brickor som ska delas ut i ", e("strong",null,"Satelliten"), " står i ", e("strong",null,"VIP-rummet"), "."),
-          e("div", {style:{display:"inline-flex",alignItems:"center",gap:"8px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:"6px",padding:"6px 12px",fontSize:"14px",fontWeight:"700",color:"#92400e"}},
-            e("span",null,"🔑"), " Kod: 2122"
-          )
-        )
-      )
-    )
-  );
-}
-
-function App() {
-  const [tab, setTab] = React.useState("timeline");
-  const [searchValue, setSearchValue] = React.useState("");
-  const TABS = [
-    {id:"timeline", label:"Tidslinje"},
-    {id:"instructions", label:"Möta föreläsare"},
-    {id:"personal", label:"Personal"},
-    {id:"moblering", label:"Möblering utställare"},
-    {id:"info", label:"Information"},
-  ];
-  return e("div", {style:{minHeight:"100vh",background:"#f8fafc"}},
-    e("header", {style:{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(8px)",borderBottom:"1px solid #e2e8f0",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}},
-      e("div", {style:{maxWidth:"1024px",margin:"0 auto",padding:"8px 12px"}},
-        e("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between"}},
-          e("div", null,
-            e("h1", {style:{fontSize:"18px",fontWeight:"700",color:"#1e293b",margin:0}}, "SOLSKOL 2026 — Bemanningsplan"),
-            e("p", {style:{fontSize:"12px",color:"#94a3b8",margin:0}}, "Sök på namn för att hitta en persons uppdrag")
-          )
-        ),
-        e("div", {style:{display:"flex",gap:"4px",marginTop:"8px",overflowX:"auto",paddingBottom:"4px"}},
-          TABS.map(t => e("button", {
-            key:t.id,
-            className:"tab-btn"+(tab===t.id?" active":""),
-            onClick:()=>{setTab(t.id);setSearchValue("");}
-          }, t.label))
-        )
-      )
-    ),
-    e("main", {style:{maxWidth:"1024px",margin:"0 auto",padding:"12px",paddingBottom:"64px"}},
-      tab==="timeline"     ? e(TabTimeline, {searchQuery:searchValue, setSearchQuery:setSearchValue}) : null,
-      tab==="instructions" ? e(TabInstructions, null) : null,
-      tab==="personal"     ? e(TabPersonal, null) : null,
-      tab==="moblering"    ? e(TabMoblering, null) : null,
-      tab==="info"         ? e(TabInfo, null) : null
-    )
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(e(App, null));
+// Initial render
+renderBlocks('');
 </script>
 </body>
 </html>
